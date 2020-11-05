@@ -1,2 +1,13 @@
-venv/
+.DS_Store
 .idea/
+
+.cache/
+.pytest_cache/
+.mypy_cache/
+
+__pycache__/
+*.pyc
+*.pyo
+
+.env
+venv/
