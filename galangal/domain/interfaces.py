@@ -1,7 +1,7 @@
 from typing import List, Dict
 
-from galangal.domain.constants import LanguageEnum
-from galangal.domain.entities import UsageCollocation
+from domain.constants import LanguageEnum
+from domain.entities import UsageCollocation
 
 from abc import ABC, abstractmethod
 
@@ -16,4 +16,18 @@ class IUsageCollocationsService(ABC):
         target_language: LanguageEnum,
         limit: int,
     ) -> List[Dict[LanguageEnum, UsageCollocation]]:
+        pass
+
+
+class ITelegramService(ABC):
+
+    def __init__(self, token: str) -> None:
+        self.token = token
+
+    @abstractmethod
+    def register_webhook(self, url: str) -> None:
+        pass
+
+    @abstractmethod
+    def send_message(self, chat_id: str, message: str) -> None:
         pass

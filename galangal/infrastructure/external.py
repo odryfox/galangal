@@ -3,9 +3,9 @@ from typing import Dict, List, Optional
 import bs4
 import requests
 
-from galangal.domain.constants import LanguageEnum
-from galangal.domain.entities import UsageCollocation
-from galangal.domain.interfaces import IUsageCollocationsService
+from domain.constants import LanguageEnum
+from domain.entities import UsageCollocation
+from domain.interfaces import IUsageCollocationsService
 
 
 class ReversoContextUsageCollocationsService(IUsageCollocationsService):

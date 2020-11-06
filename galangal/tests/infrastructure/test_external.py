@@ -1,8 +1,8 @@
 from unittest import mock
 
-from galangal.domain.constants import LanguageEnum
-from galangal.domain.entities import UsageCollocation
-from galangal.infrasructure.external import \
+from domain.constants import LanguageEnum
+from domain.entities import UsageCollocation
+from infrastructure.external import \
     ReversoContextUsageCollocationsService
 
 
@@ -30,7 +30,7 @@ class TestReversoContextUsageCollocationsServiceTestCase:
         assert 'User-Agent' in actual_headers
         assert 'python-requests' not in actual_headers['User-Agent']
 
-    @mock.patch('galangal.infrasructure.external.requests.get')
+    @mock.patch('galangal.infrastructure.external.requests.get')
     def test_search(self, mock_get):
         mock_get.return_value.text = """
         <div class="example">
