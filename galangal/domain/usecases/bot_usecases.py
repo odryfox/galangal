@@ -57,6 +57,9 @@ class SearchUsageCollocationsUsecase:
             target_text = "*{}*".format(collocation.collocation_from_sentence).join(parts)
             response += target_text + '\n\n'
 
+        if not response:
+            response = 'Произошла ошибка('
+
         self._telegram_service.send_message(
             chat_id=chat_id,
             message=response,
