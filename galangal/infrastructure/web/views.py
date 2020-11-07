@@ -21,11 +21,14 @@ class BotMessagesView(MethodView):
         super().__init__()
 
     def post(self):
-        body = request.get_json()
-        chat_id = body['message']['chat']['id']
-        message = body['message']['text']
-        self._search_usage_collocations_usecase.execute(
-            chat_id=chat_id,
-            message=message
-        )
+        try:
+            body = request.get_json()
+            chat_id = body['message']['chat']['id']
+            message = body['message']['text']
+            self._search_usage_collocations_usecase.execute(
+                chat_id=chat_id,
+                message=message
+            )
+        except Exception:
+            pass
         return '!'

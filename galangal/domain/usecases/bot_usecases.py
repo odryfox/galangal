@@ -35,27 +35,30 @@ class SearchUsageCollocationsUsecase:
         return language
 
     def execute(self, chat_id: str, message: str) -> None:
-        source_language = self._get_source_language(message)
-        target_language = self._get_target_language(source_language)
+        try:
+            source_language = self._get_source_language(message)
+            target_language = self._get_target_language(source_language)
 
-        usage_collocations = self._usage_collocations_service.search(
-            collocation=message,
-            source_language=source_language,
-            target_language=target_language,
-            limit=5,
-        )
+            usage_collocations = self._usage_collocations_service.search(
+                collocation=message,
+                source_language=source_language,
+                target_language=target_language,
+                limit=5,
+            )
 
-        response = ''
-        for usage_collocation in usage_collocations:
-            collocation = usage_collocation[target_language]
-            parts = collocation.sentence.split(collocation.collocation_from_sentence)
-            target_text = "*{}*".format(collocation.collocation_from_sentence).join(parts)
-            response += target_text + '\n'
+            response = ''
+            for usage_collocation in usage_collocations:
+                collocation = usage_collocation[target_language]
+                parts = collocation.sentence.split(collocation.collocation_from_sentence)
+                target_text = "*{}*".format(collocation.collocation_from_sentence).join(parts)
+                response += target_text + '\n'
 
-            collocation = usage_collocation[source_language]
-            parts = collocation.sentence.split(collocation.collocation_from_sentence)
-            target_text = "*{}*".format(collocation.collocation_from_sentence).join(parts)
-            response += target_text + '\n\n'
+                collocation = usage_collocation[source_language]
+                parts = collocation.sentence.split(collocation.collocation_from_sentence)
+                target_text = "*{}*".format(collocation.collocation_from_sentence).join(parts)
+                response += target_text + '\n\n'
+        except Exception:
+            response = ''
 
         if not response:
             response = 'Произошла ошибка('
