@@ -35,35 +35,28 @@ class SearchUsageCollocationsUsecase:
         return language
 
     def execute(self, chat_id: str, message: str) -> None:
-        try:
-            source_language = self._get_source_language(message)
-            target_language = self._get_target_language(source_language)
 
-            usage_collocations = self._usage_collocations_service.search(
+        source_language = self._get_source_language(message)
+        target_language = self._get_target_language(source_language)
+
+        try:
+            usages_of_collocation = self._usage_collocations_service.search(
                 collocation=message,
                 source_language=source_language,
                 target_language=target_language,
                 limit=5,
             )
+        except:
+            usages_of_collocation = []
 
-            response = ''
-            for usage_collocation in usage_collocations:
-                collocation = usage_collocation[target_language]
-                parts = collocation.sentence.split(collocation.collocation_from_sentence)
-                target_text = "*{}*".format(collocation.collocation_from_sentence).join(parts)
-                response += target_text + '\n'
-
-                collocation = usage_collocation[source_language]
-                parts = collocation.sentence.split(collocation.collocation_from_sentence)
-                target_text = "*{}*".format(collocation.collocation_from_sentence).join(parts)
-                response += target_text + '\n\n'
-        except Exception:
-            response = ''
-
-        if not response:
-            response = 'Произошла ошибка('
-
-        self._telegram_service.send_message(
-            chat_id=chat_id,
-            message=response,
-        )
+        if usages_of_collocation:
+            self._telegram_service.send_usages_of_collocation(
+                chat_id=chat_id,
+                usages_of_collocation=usages_of_collocation,
+                languages=[target_language, source_language],
+            )
+        else:
+            self._telegram_service.send_message(
+                chat_id=chat_id,
+                message='Произошла ошибка(',
+            )

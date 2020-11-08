@@ -31,3 +31,12 @@ class ITelegramService(ABC):
     @abstractmethod
     def send_message(self, chat_id: str, message: str) -> None:
         pass
+
+    @abstractmethod
+    def send_usages_of_collocation(
+        self,
+        chat_id: str,
+        usages_of_collocation: List[Dict[LanguageEnum, UsageCollocation]],
+        languages: List[LanguageEnum]
+    ) -> None:
+        pass
