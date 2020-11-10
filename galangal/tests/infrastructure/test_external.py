@@ -1,22 +1,21 @@
 from unittest import mock
 
-from domain.constants import LanguageEnum
-from domain.entities import UsageCollocation
-from infrastructure.external import \
-    ReversoContextUsageCollocationsService
+from domain.constants import Language
+from domain.interfaces import PhraseUsage
+from infrastructure.external import ReversoContextPhraseUsagesInDifferentLanguagesService
 
 
-class TestReversoContextUsageCollocationsServiceTestCase:
+class TestReversoContextPhraseUsagesInDifferentLanguagesService:
 
     @classmethod
     def setup_class(cls):
-        cls.service = ReversoContextUsageCollocationsService()
+        cls.service = ReversoContextPhraseUsagesInDifferentLanguagesService()
 
     def test_build_url(self):
         actual_url = self.service._build_url(
-            collocation='I will be back',
-            source_language=LanguageEnum.EN,
-            target_language=LanguageEnum.RU,
+            phrase='I will be back',
+            source_language=Language.EN,
+            target_language=Language.RU,
         )
 
         expected_url = 'https://context.reverso.net/translation/' \
@@ -54,15 +53,16 @@ class TestReversoContextUsageCollocationsServiceTestCase:
         """
 
         actual_result = self.service.search(
-            collocation='I will be back',
-            source_language=LanguageEnum.EN,
-            target_language=LanguageEnum.RU,
+            phrase='I will be back',
+            source_language=Language.EN,
+            target_languages=[Language.RU],
+            limit=5,
         )
 
         url = self.service._build_url(
-            collocation='I will be back',
-            source_language=LanguageEnum.EN,
-            target_language=LanguageEnum.RU,
+            phrase='I will be back',
+            source_language=Language.EN,
+            target_language=Language.RU,
         )
         headers = self.service._build_header()
 
@@ -70,23 +70,23 @@ class TestReversoContextUsageCollocationsServiceTestCase:
 
         expected_result = [
             {
-                LanguageEnum.EN: UsageCollocation(
-                    sentence="If anyone should phone, say I will be back at one o'clock.",
-                    collocation_from_sentence='I will be back',
+                Language.EN: PhraseUsage(
+                    text="If anyone should phone, say I will be back at one o'clock.",
+                    phrase='I will be back',
                 ),
-                LanguageEnum.RU: UsageCollocation(
-                    sentence='Если кто-нибудь позвонит, скажи, что я вернусь в час.',
-                    collocation_from_sentence='я вернусь',
+                Language.RU: PhraseUsage(
+                    text='Если кто-нибудь позвонит, скажи, что я вернусь в час.',
+                    phrase='я вернусь',
                 ),
             },
             {
-                LanguageEnum.EN: UsageCollocation(
-                    sentence='I will be back by 5, but just...',
-                    collocation_from_sentence='I will be back',
+                Language.EN: PhraseUsage(
+                    text='I will be back by 5, but just...',
+                    phrase='I will be back',
                 ),
-                LanguageEnum.RU: UsageCollocation(
-                    sentence='Я вернусь к пяти, но если...',
-                    collocation_from_sentence='Я вернусь',
+                Language.RU: PhraseUsage(
+                    text='Я вернусь к пяти, но если...',
+                    phrase='Я вернусь',
                 ),
             },
         ]

@@ -1,37 +1,38 @@
-from typing import Dict, List, Optional
+from typing import List
 
 import bs4
 import requests
 
-from domain.constants import LanguageEnum
-from domain.entities import UsageCollocation
-from domain.interfaces import IUsageCollocationsService
+from domain.constants import Language
+from domain.interfaces import PhraseUsagesInDifferentLanguages, PhraseUsage
+from domain.interfaces import IPhraseUsagesInDifferentLanguagesService
 
 
-class ReversoContextUsageCollocationsService(IUsageCollocationsService):
+class ReversoContextPhraseUsagesInDifferentLanguagesService(IPhraseUsagesInDifferentLanguagesService):
 
     BASE_URL = 'https://context.reverso.net'
 
     LANGUAGE_MAP = {
-        LanguageEnum.RU: 'russian',
-        LanguageEnum.EN: 'english',
+        Language.RU: 'russian',
+        Language.EN: 'english',
     }
 
     def _build_url(
         self,
-        collocation: str,
-        source_language: LanguageEnum,
-        target_language: LanguageEnum,
+        phrase: str,
+        source_language: Language,
+        target_language: Language,
     ) -> str:
+
         url_template = '{base_url}/translation/' \
-                       '{source_language}-{target_language}/{collocation}'
-        words = collocation.split()
-        encoded_collocation = '+'.join(words)
+                       '{source_language}-{target_language}/{phrase}'
+        words = phrase.split()
+        encoded_phrase = '+'.join(words)
         url = url_template.format(
             base_url=self.BASE_URL,
             source_language=self.LANGUAGE_MAP[source_language],
             target_language=self.LANGUAGE_MAP[target_language],
-            collocation=encoded_collocation,
+            phrase=encoded_phrase,
         )
         return url
 
@@ -42,14 +43,16 @@ class ReversoContextUsageCollocationsService(IUsageCollocationsService):
 
     def search(
         self,
-        collocation: str,
-        source_language: LanguageEnum,
-        target_language: LanguageEnum,
-        limit: Optional[int] = None,
-    ) -> List[Dict[LanguageEnum, UsageCollocation]]:
+        phrase: str,
+        source_language: Language,
+        target_languages: List[Language],
+        limit: int,
+    ) -> PhraseUsagesInDifferentLanguages:
+
+        target_language = target_languages[0]
 
         url = self._build_url(
-            collocation=collocation,
+            phrase=phrase,
             source_language=source_language,
             target_language=target_language,
         )
@@ -62,32 +65,32 @@ class ReversoContextUsageCollocationsService(IUsageCollocationsService):
         if limit is not None:
             examples = examples[:limit]
 
-        result = []
+        phrase_usages_in_different_languages = []
 
         for example in examples:
             source = example.find(class_='src')
-            source_sentence = source.text.strip()
-            source_collocation_from_sentence = example.find('em').text.strip()
+            text_in_source_language = source.text.strip()
+            phrase_in_source_language = example.find('em').text.strip()
 
-            usage_collocation_in_source_language = UsageCollocation(
-                sentence=source_sentence,
-                collocation_from_sentence=source_collocation_from_sentence,
+            phrase_usage_in_source_language = PhraseUsage(
+                text=text_in_source_language,
+                phrase=phrase_in_source_language,
             )
 
             target = example.find(class_='trg')
-            target_sentence = target.find(class_='text').text.strip()
-            target_collocation_from_sentence = target.find('a').text.strip()
+            text_in_target_language = target.find(class_='text').text.strip()
+            phrase_in_target_language = target.find('a').text.strip()
 
-            usage_collocation_in_target_language = UsageCollocation(
-                sentence=target_sentence,
-                collocation_from_sentence=target_collocation_from_sentence,
+            phrase_usage_in_target_language = PhraseUsage(
+                text=text_in_target_language,
+                phrase=phrase_in_target_language,
             )
 
-            result.append(
+            phrase_usages_in_different_languages.append(
                 {
-                    source_language: usage_collocation_in_source_language,
-                    target_language: usage_collocation_in_target_language,
+                    source_language: phrase_usage_in_source_language,
+                    target_language: phrase_usage_in_target_language,
                 }
             )
 
-        return result
+        return phrase_usages_in_different_languages

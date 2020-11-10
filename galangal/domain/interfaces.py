@@ -1,28 +1,38 @@
+from dataclasses import dataclass
 from typing import List, Dict
 
-from domain.constants import LanguageEnum
-from domain.entities import UsageCollocation
+from domain.constants import Language
 
 from abc import ABC, abstractmethod
 
 
-class IUsageCollocationsService(ABC):
+@dataclass
+class PhraseUsage:
+    text: str
+    phrase: str
+
+
+PhraseUsageInDifferentLanguages = Dict[Language, PhraseUsage]
+PhraseUsagesInDifferentLanguages = List[PhraseUsageInDifferentLanguages]
+
+
+class IPhraseUsagesInDifferentLanguagesService(ABC):
 
     @abstractmethod
     def search(
         self,
-        collocation: str,
-        source_language: LanguageEnum,
-        target_language: LanguageEnum,
+        phrase: str,
+        source_language: Language,
+        target_languages: List[Language],
         limit: int,
-    ) -> List[Dict[LanguageEnum, UsageCollocation]]:
+    ) -> PhraseUsagesInDifferentLanguages:
         pass
 
 
-class ITelegramService(ABC):
+class IBotService(ABC):
 
     def __init__(self, token: str) -> None:
-        self.token = token
+        self._token = token
 
     @abstractmethod
     def register_webhook(self, url: str) -> None:
@@ -33,10 +43,17 @@ class ITelegramService(ABC):
         pass
 
     @abstractmethod
-    def send_usages_of_collocation(
+    def send_phrase_usages_in_different_languages(
         self,
         chat_id: str,
-        usages_of_collocation: List[Dict[LanguageEnum, UsageCollocation]],
-        languages: List[LanguageEnum]
+        phrase_usages_in_different_languages: PhraseUsagesInDifferentLanguages,
+        languages: List[Language]
     ) -> None:
+        pass
+
+
+class ILanguageService:
+
+    @abstractmethod
+    def get_language(self, text: str) -> Language:
         pass

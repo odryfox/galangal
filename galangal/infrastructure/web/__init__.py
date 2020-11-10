@@ -4,10 +4,12 @@ from flask import Flask
 
 from dotenv import load_dotenv
 
-from domain.usecases.bot_usecases import RegisterWebhookUsecase, SearchUsageCollocationsUsecase
+from domain.usecases.bot_usecases import RegisterBotWebhookUsecase
+from domain.usecases.phrase_usages_usecases import SearchPhraseUsagesInDifferentLanguagesUsecase
 from infrastructure.bot import TelegramService
-from infrastructure.external import ReversoContextUsageCollocationsService
-from infrastructure.web.views import BotWebhooksView, BotMessagesView
+from infrastructure.external import ReversoContextPhraseUsagesInDifferentLanguagesService
+from infrastructure.services import LanguageService
+from infrastructure.web.views import TelegramWebhooksView, TelegramMessagesView
 
 
 def create_flask_app(name, web_app) -> Flask:
@@ -16,8 +18,8 @@ def create_flask_app(name, web_app) -> Flask:
     add = app.add_url_rule
 
     views_kwargs = {'web_app': web_app}
-    add('/bot/webhooks', view_func=BotWebhooksView.as_view('bot_webhooks', **views_kwargs))
-    add(web_app.bot_url, view_func=BotMessagesView.as_view('bot_messages', **views_kwargs))
+    add('/bot/webhooks', view_func=TelegramWebhooksView.as_view('bot_webhooks', **views_kwargs))
+    add(web_app.bot_url, view_func=TelegramMessagesView.as_view('bot_messages', **views_kwargs))
 
     return app
 
@@ -34,12 +36,13 @@ class WebApp:
         self.bot_url = '/bot/messages/{}'.format(telegram_token)
         self.bot_message_url = '{}/bot/messages/{}'.format(telegram_webhook_base_url, telegram_token)
 
-        self.register_webhook_usecase = RegisterWebhookUsecase(
-            telegram_service=telegram_service
+        self.register_telegram_webhook_usecase = RegisterBotWebhookUsecase(
+            bot_service=telegram_service
         )
-        self.search_usage_collocations_usecase = SearchUsageCollocationsUsecase(
-            usage_collocations_service=ReversoContextUsageCollocationsService(),
-            telegram_service=telegram_service
+        self.search_phrase_usages_in_different_languages_usecase = SearchPhraseUsagesInDifferentLanguagesUsecase(
+            language_service=LanguageService(),
+            phrase_usages_in_different_languages_service=ReversoContextPhraseUsagesInDifferentLanguagesService(),
+            bot_service=telegram_service
         )
 
         self.flask_app = create_flask_app('Web app', web_app=self)
