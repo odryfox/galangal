@@ -2,7 +2,8 @@ from unittest import mock
 
 from domain.constants import Language
 from domain.interfaces import PhraseUsage
-from infrastructure.external import ReversoContextPhraseUsagesInDifferentLanguagesService
+from infrastructure.external import \
+    ReversoContextPhraseUsagesInDifferentLanguagesService
 
 
 class TestReversoContextPhraseUsagesInDifferentLanguagesService:

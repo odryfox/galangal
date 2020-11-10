@@ -1,10 +1,8 @@
 from typing import List
 
-from telegram.ext import Updater
-
 from domain.constants import Language
-from domain.interfaces import PhraseUsagesInDifferentLanguages
-from domain.interfaces import IBotService
+from domain.interfaces import IBotService, PhraseUsagesInDifferentLanguages
+from telegram.ext import Updater
 
 
 class TelegramService(IBotService):

@@ -1,9 +1,8 @@
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import List, Dict
+from typing import Dict, List
 
 from domain.constants import Language
-
-from abc import ABC, abstractmethod
 
 
 @dataclass

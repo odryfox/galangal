@@ -1,15 +1,15 @@
 import os
 
-from flask import Flask
-
-from dotenv import load_dotenv
-
 from domain.usecases.bot_usecases import RegisterBotWebhookUsecase
-from domain.usecases.phrase_usages_usecases import SearchPhraseUsagesInDifferentLanguagesUsecase
+from domain.usecases.phrase_usages_usecases import \
+    SearchPhraseUsagesInDifferentLanguagesUsecase
+from dotenv import load_dotenv
+from flask import Flask
 from infrastructure.bot import TelegramService
-from infrastructure.external import ReversoContextPhraseUsagesInDifferentLanguagesService
+from infrastructure.external import \
+    ReversoContextPhraseUsagesInDifferentLanguagesService
 from infrastructure.services import LanguageService
-from infrastructure.web.views import TelegramWebhooksView, TelegramMessagesView
+from infrastructure.web.views import TelegramMessagesView, TelegramWebhooksView
 
 
 def create_flask_app(name, web_app) -> Flask:
