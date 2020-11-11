@@ -2,4 +2,7 @@ tests:
 	PYTHONPATH=galangal/ python -m pytest galangal/tests
 
 isort:
-	isort galangal/
+	PYTHONPATH=galangal/ isort galangal/
+
+linter:
+	PYTHONPATH=galangal/ pylint galangal/
