@@ -8,7 +8,7 @@ from flask import Flask
 from infrastructure.bot import TelegramService
 from infrastructure.external import \
     ReversoContextPhraseUsagesInDifferentLanguagesService
-from infrastructure.services import LanguageService
+from infrastructure.services import RegexLanguageService
 from infrastructure.web.views import TelegramMessagesView, TelegramWebhooksView
 
 
@@ -40,8 +40,10 @@ class WebApp:
             bot_service=telegram_service
         )
         self.search_phrase_usages_in_different_languages_usecase = SearchPhraseUsagesInDifferentLanguagesUsecase(
-            language_service=LanguageService(),
-            phrase_usages_in_different_languages_service=ReversoContextPhraseUsagesInDifferentLanguagesService(),
+            language_service=RegexLanguageService(),
+            phrase_usages_in_different_languages_service=ReversoContextPhraseUsagesInDifferentLanguagesService(
+                language_service=RegexLanguageService()
+            ),
             bot_service=telegram_service
         )
 

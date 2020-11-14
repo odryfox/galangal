@@ -11,8 +11,7 @@ class IPhraseUsagesInDifferentLanguagesService(ABC):
     def search(
         self,
         phrase: str,
-        source_language: Language,
-        target_languages: List[Language],
+        languages: List[Language],
         limit: int,
     ) -> PhraseUsagesInDifferentLanguages:
         pass

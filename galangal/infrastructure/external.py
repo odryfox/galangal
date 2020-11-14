@@ -4,7 +4,8 @@ import bs4
 import requests
 from domain.constants import Language
 from domain.entities import PhraseUsage
-from domain.interfaces import (IPhraseUsagesInDifferentLanguagesService,
+from domain.interfaces import (ILanguageService,
+                               IPhraseUsagesInDifferentLanguagesService,
                                PhraseUsagesInDifferentLanguages)
 
 
@@ -16,6 +17,9 @@ class ReversoContextPhraseUsagesInDifferentLanguagesService(IPhraseUsagesInDiffe
         Language.RU: 'russian',
         Language.EN: 'english',
     }
+
+    def __init__(self, language_service: ILanguageService):
+        self._language_service =language_service
 
     def _build_url(
         self,
@@ -44,12 +48,12 @@ class ReversoContextPhraseUsagesInDifferentLanguagesService(IPhraseUsagesInDiffe
     def search(
         self,
         phrase: str,
-        source_language: Language,
-        target_languages: List[Language],
+        languages: List[Language],
         limit: int,
     ) -> PhraseUsagesInDifferentLanguages:
 
-        target_language = target_languages[0]
+        source_language = self._language_service.get_language(phrase)
+        target_language = languages[0]
 
         url = self._build_url(
             phrase=phrase,

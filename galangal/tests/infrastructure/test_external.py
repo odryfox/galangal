@@ -1,4 +1,5 @@
 from unittest import mock
+from unittest.mock import Mock
 
 from domain.constants import Language
 from domain.entities import PhraseUsage
@@ -8,9 +9,10 @@ from infrastructure.external import \
 
 class TestReversoContextPhraseUsagesInDifferentLanguagesService:
 
-    @classmethod
-    def setup_class(cls):
-        cls.service = ReversoContextPhraseUsagesInDifferentLanguagesService()
+    def setup_method(self):
+        self.service = ReversoContextPhraseUsagesInDifferentLanguagesService(
+            language_service=Mock()
+        )
 
     def test_build_url(self):
         actual_url = self.service._build_url(
@@ -32,6 +34,8 @@ class TestReversoContextPhraseUsagesInDifferentLanguagesService:
 
     @mock.patch('galangal.infrastructure.external.requests.get')
     def test_search(self, mock_get):
+        self.service._language_service.get_language.return_value = Language.EN
+
         mock_get.return_value.text = """
         <div class="example">
           <div class="src ltr">
@@ -53,15 +57,15 @@ class TestReversoContextPhraseUsagesInDifferentLanguagesService:
         </div>
         """
 
+        phrase = 'I will be back'
         actual_result = self.service.search(
-            phrase='I will be back',
-            source_language=Language.EN,
-            target_languages=[Language.RU],
+            phrase=phrase,
+            languages=[Language.RU],
             limit=5,
         )
 
         url = self.service._build_url(
-            phrase='I will be back',
+            phrase=phrase,
             source_language=Language.EN,
             target_language=Language.RU,
         )
@@ -91,5 +95,6 @@ class TestReversoContextPhraseUsagesInDifferentLanguagesService:
                 ),
             },
         ]
+        self.service._language_service.get_language.assert_called_once_with(phrase)
 
         assert actual_result == expected_result

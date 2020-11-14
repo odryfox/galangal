@@ -26,8 +26,7 @@ class SearchPhraseUsagesInDifferentLanguagesUsecase:
         try:
             phrase_usages_in_different_languages = self._phrase_usages_in_different_languages_service.search(
                 phrase=message,
-                source_language=source_language,
-                target_languages=[target_language],
+                languages=[target_language],
                 limit=5,
             )
         except:
