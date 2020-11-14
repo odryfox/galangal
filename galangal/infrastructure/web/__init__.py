@@ -1,13 +1,15 @@
 import os
 
 from domain.usecases.bot_usecases import RegisterBotWebhookUsecase
-from domain.usecases.phrase_usages_usecases import \
+from domain.usecases.phrase_usages_usecases import (
     SearchPhraseUsagesInDifferentLanguagesUsecase
+)
 from dotenv import load_dotenv
 from flask import Flask
 from infrastructure.bot import TelegramService
-from infrastructure.external import \
+from infrastructure.external import (
     ReversoContextPhraseUsagesInDifferentLanguagesService
+)
 from infrastructure.services import RegexLanguageService
 from infrastructure.web.views import TelegramMessagesView, TelegramWebhooksView
 

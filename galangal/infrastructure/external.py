@@ -4,9 +4,11 @@ import bs4
 import requests
 from domain.constants import Language
 from domain.entities import PhraseUsage
-from domain.interfaces import (ILanguageService,
-                               IPhraseUsagesInDifferentLanguagesService,
-                               PhraseUsagesInDifferentLanguages)
+from domain.interfaces import (
+    ILanguageService,
+    IPhraseUsagesInDifferentLanguagesService,
+    PhraseUsagesInDifferentLanguages
+)
 
 
 class ReversoContextPhraseUsagesInDifferentLanguagesService(IPhraseUsagesInDifferentLanguagesService):

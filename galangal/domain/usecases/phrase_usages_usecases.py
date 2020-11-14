@@ -1,6 +1,9 @@
 from domain.constants import Language
-from domain.interfaces import (IBotService, ILanguageService,
-                               IPhraseUsagesInDifferentLanguagesService)
+from domain.interfaces import (
+    IBotService,
+    ILanguageService,
+    IPhraseUsagesInDifferentLanguagesService
+)
 
 
 class SearchPhraseUsagesInDifferentLanguagesUsecase:

@@ -3,8 +3,9 @@ from unittest.mock import Mock
 
 from domain.constants import Language
 from domain.entities import PhraseUsage
-from infrastructure.external import \
+from infrastructure.external import (
     ReversoContextPhraseUsagesInDifferentLanguagesService
+)
 
 
 class TestReversoContextPhraseUsagesInDifferentLanguagesService:
