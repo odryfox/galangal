@@ -3,8 +3,9 @@ from typing import List
 import bs4
 import requests
 from domain.constants import Language
+from domain.entities import PhraseUsage
 from domain.interfaces import (IPhraseUsagesInDifferentLanguagesService,
-                               PhraseUsage, PhraseUsagesInDifferentLanguages)
+                               PhraseUsagesInDifferentLanguages)
 
 
 class ReversoContextPhraseUsagesInDifferentLanguagesService(IPhraseUsagesInDifferentLanguagesService):
