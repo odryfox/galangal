@@ -1,5 +1,4 @@
-import os
-
+from dependency_injector import containers, providers
 from domain.usecases.bot_usecases import RegisterBotWebhookUsecase
 from domain.usecases.phrase_usages_usecases import (
     SearchPhraseUsagesInDifferentLanguagesUsecase
@@ -14,46 +13,70 @@ from infrastructure.services import RegexLanguageService
 from infrastructure.web.views import TelegramMessagesView, TelegramWebhooksView
 
 
-def create_flask_app(name, web_app) -> Flask:
+def create_flask_app(name, bot_url, register_telegram_webhook_usecase, search_phrase_usages_in_different_languages_usecase) -> Flask:
     app = Flask(name)
-
     add = app.add_url_rule
 
-    views_kwargs = {'web_app': web_app}
-    add('/bot/webhooks', view_func=TelegramWebhooksView.as_view('bot_webhooks', **views_kwargs))
-    add(web_app.bot_url, view_func=TelegramMessagesView.as_view('bot_messages', **views_kwargs))
+    add('/bot/webhooks', view_func=TelegramWebhooksView.as_view(
+        'bot_webhooks',
+        register_telegram_webhook_usecase=register_telegram_webhook_usecase,
+    ))
+    add(bot_url, view_func=TelegramMessagesView.as_view(
+        'bot_messages',
+        search_phrase_usages_in_different_languages_usecase=search_phrase_usages_in_different_languages_usecase,
+    ))
 
     return app
 
 
-class WebApp:
-    def __init__(self):
-        load_dotenv()
+class WebContainer(containers.DeclarativeContainer):
 
-        telegram_webhook_base_url = os.environ['TELEGRAM_WEBHOOK_BASE_URL']
-        telegram_token = os.environ['TELEGRAM_TOKEN']
+    config = providers.Configuration()
 
-        telegram_service = TelegramService(token=telegram_token)
+    telegram_service = providers.Singleton(
+        TelegramService,
+        token=config.telegram_token,
+    )
 
-        self.bot_url = '/bot/messages/{}'.format(telegram_token)
-        self.bot_message_url = '{}/bot/messages/{}'.format(telegram_webhook_base_url, telegram_token)
+    regex_language_service = providers.Singleton(RegexLanguageService)
 
-        self.register_telegram_webhook_usecase = RegisterBotWebhookUsecase(
-            bot_service=telegram_service
-        )
-        self.search_phrase_usages_in_different_languages_usecase = SearchPhraseUsagesInDifferentLanguagesUsecase(
-            language_service=RegexLanguageService(),
-            phrase_usages_in_different_languages_service=ReversoContextPhraseUsagesInDifferentLanguagesService(
-                language_service=RegexLanguageService()
-            ),
-            bot_service=telegram_service
-        )
+    phrase_usages_in_different_languages_service = providers.Singleton(
+        ReversoContextPhraseUsagesInDifferentLanguagesService,
+        language_service=regex_language_service,
+    )
 
-        self.flask_app = create_flask_app('Web app', web_app=self)
+    register_telegram_webhook_usecase = providers.Singleton(
+        RegisterBotWebhookUsecase,
+        bot_message_url=config.bot_message_url,
+        bot_service=telegram_service,
+    )
 
-    def run(self):
-        self.flask_app.run(debug=True)
+    search_phrase_usages_in_different_languages_usecase = providers.Singleton(
+        SearchPhraseUsagesInDifferentLanguagesUsecase,
+        language_service=regex_language_service,
+        phrase_usages_in_different_languages_service=phrase_usages_in_different_languages_service,
+        bot_service=telegram_service,
+    )
+
+    flask_app = providers.Singleton(
+        create_flask_app,
+        name='web_app',
+        bot_url=config.bot_url,
+        register_telegram_webhook_usecase=register_telegram_webhook_usecase,
+        search_phrase_usages_in_different_languages_usecase=search_phrase_usages_in_different_languages_usecase,
+    )
 
 
-def create_app() -> WebApp:
-    return WebApp()
+def create_app() -> Flask:
+    app = WebContainer()
+
+    load_dotenv()
+
+    app.config.telegram_webhook_base_url.from_env('TELEGRAM_WEBHOOK_BASE_URL')
+    app.config.telegram_token.from_env('TELEGRAM_TOKEN')
+    app.config.bot_url.update('/bot/messages/{}'.format(app.config.telegram_token()))
+    app.config.bot_message_url.update('{}/bot/messages/{}'.format(
+        app.config.telegram_webhook_base_url(), app.config.telegram_token()
+    ))
+
+    return app.flask_app()
