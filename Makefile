@@ -2,7 +2,7 @@ up:
 	python galangal/manage_web.py
 
 tests:
-	PYTHONPATH=galangal/ python -m pytest galangal/tests --verbose
+	PYTHONPATH=galangal/ python -m pytest galangal/tests --verbose --disable-warnings
 
 isort:
 	PYTHONPATH=galangal/ isort galangal/ -m=3
