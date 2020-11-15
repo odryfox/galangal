@@ -28,7 +28,7 @@ class TestReversoContextPhraseUsagesInDifferentLanguagesService:
         assert actual_url == expected_url
 
     def test_build_headers(self):
-        actual_headers = self.service._build_header()
+        actual_headers = self.service._build_headers()
 
         assert 'User-Agent' in actual_headers
         assert 'python-requests' not in actual_headers['User-Agent']
@@ -70,7 +70,7 @@ class TestReversoContextPhraseUsagesInDifferentLanguagesService:
             source_language=Language.EN,
             target_language=Language.RU,
         )
-        headers = self.service._build_header()
+        headers = self.service._build_headers()
 
         mock_get.assert_called_once_with(url, headers=headers)
 

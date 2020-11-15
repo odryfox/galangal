@@ -42,7 +42,7 @@ class ReversoContextPhraseUsagesInDifferentLanguagesService(IPhraseUsagesInDiffe
         )
         return url
 
-    def _build_header(self) -> dict:
+    def _build_headers(self) -> dict:
         user_agent = 'Mozilla/5.0'
         headers = {'User-Agent': user_agent}
         return headers
@@ -62,7 +62,7 @@ class ReversoContextPhraseUsagesInDifferentLanguagesService(IPhraseUsagesInDiffe
             source_language=source_language,
             target_language=target_language,
         )
-        headers = self._build_header()
+        headers = self._build_headers()
         response = requests.get(url, headers=headers)
         html = response.text
 
