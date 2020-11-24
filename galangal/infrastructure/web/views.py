@@ -4,6 +4,7 @@ from domain.usecases.phrase_usages_usecases import (
 from flask import request
 from flask.views import MethodView
 from infrastructure.bot import TelegramService
+from millet import Agent
 
 
 class TelegramWebhooksView(MethodView):
@@ -25,10 +26,10 @@ class TelegramWebhooksView(MethodView):
 class TelegramMessagesView(MethodView):
     def __init__(
         self,
-        search_phrase_usages_in_different_languages_usecase: SearchPhraseUsagesInDifferentLanguagesUsecase,
+        agent: Agent,
         telegram_service: TelegramService,
     ):
-        self._search_phrase_usages_in_different_languages_usecase = search_phrase_usages_in_different_languages_usecase
+        self._agent = agent
         self._telegram_service = telegram_service
 
         super().__init__()
@@ -39,27 +40,12 @@ class TelegramMessagesView(MethodView):
         chat_id = body['message']['chat']['id']
         message = body['message']['text']
 
-        try:
-            phrase_usages_in_different_languages = self._search_phrase_usages_in_different_languages_usecase.execute(
-                message=message
-            )
-        except:
+        answers = self._agent.query(message, chat_id)
+
+        for answer in answers:
             self._telegram_service.send_message(
                 chat_id=chat_id,
-                message='Произошла ошибка, обратись к создателю бота',
+                message=answer,
             )
-        else:
-
-            if phrase_usages_in_different_languages:
-                self._telegram_service.send_phrase_usages_in_different_languages(
-                    chat_id=chat_id,
-                    phrase_usages_in_different_languages=phrase_usages_in_different_languages,
-                    languages=list(phrase_usages_in_different_languages[0].keys()),
-                )
-            else:
-                self._telegram_service.send_message(
-                    chat_id=chat_id,
-                    message='Увы, но я не нашел употреблений этой фразы :(',
-                )
 
         return '!'

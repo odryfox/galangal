@@ -7,3 +7,5 @@ python-dotenv==0.15.0
 gunicorn==20.0.4
 pylint==2.6.0
 pytest-cov==2.10.1
+Millet==0.1.1
+redis==3.5.3

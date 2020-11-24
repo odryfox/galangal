@@ -1,7 +1,5 @@
 from domain.services import RegexLanguageService
-from domain.usecases.phrase_usages_usecases import (
-    SearchPhraseUsagesInDifferentLanguagesUsecase
-)
+from domain.skills import create_skill_classifier
 from flask import Flask
 from infrastructure.bot import TelegramService
 from infrastructure.external import (
@@ -9,6 +7,7 @@ from infrastructure.external import (
 )
 from infrastructure.web.config import Config
 from infrastructure.web.views import TelegramMessagesView, TelegramWebhooksView
+from millet import Agent
 
 
 def create_app(config: Config) -> Flask:
@@ -20,11 +19,6 @@ def create_app(config: Config) -> Flask:
         language_service=regex_language_service,
     )
 
-    search_phrase_usages_in_different_languages_usecase = SearchPhraseUsagesInDifferentLanguagesUsecase(
-        language_service=regex_language_service,
-        phrase_usages_in_different_languages_service=phrase_usages_in_different_languages_service,
-    )
-
     flask_app = Flask('web_app')
     add = flask_app.add_url_rule
 
@@ -33,9 +27,15 @@ def create_app(config: Config) -> Flask:
         config.TELEGRAM_WEBHOOK_BASE_URL, telegram_webhook_path
     )
 
+    skill_classifier = create_skill_classifier(
+        language_service=regex_language_service,
+        phrase_usages_in_different_languages_service=phrase_usages_in_different_languages_service,
+    )
+    agent = Agent(skill_classifier=skill_classifier)
+
     add(telegram_webhook_path, view_func=TelegramMessagesView.as_view(
         'bot_messages',
-        search_phrase_usages_in_different_languages_usecase=search_phrase_usages_in_different_languages_usecase,
+        agent=agent,
         telegram_service=telegram_service,
     ))
 
