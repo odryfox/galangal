@@ -66,7 +66,7 @@ class ReversoContextPhraseUsagesInDifferentLanguagesService(IPhraseUsagesInDiffe
         response = requests.get(url, headers=headers)
         html = response.text
 
-        soup = bs4.BeautifulSoup(html)
+        soup = bs4.BeautifulSoup(html, 'html.parser')
         examples = soup.findAll('div', {'class': 'example'})
         if limit is not None:
             examples = examples[:limit]

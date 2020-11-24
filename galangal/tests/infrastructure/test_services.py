@@ -1,5 +1,5 @@
 from domain.constants import Language
-from infrastructure.services import RegexLanguageService
+from domain.services import RegexLanguageService
 
 
 class TestRegexLanguageService:

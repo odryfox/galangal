@@ -1,11 +1,14 @@
 from typing import List
 
 from domain.constants import Language
-from domain.interfaces import IBotService, PhraseUsagesInDifferentLanguages
+from domain.interfaces import PhraseUsagesInDifferentLanguages
 from telegram.ext import Updater
 
 
-class TelegramService(IBotService):
+class TelegramService:
+
+    def __init__(self, token: str):
+        self._token = token
 
     def register_webhook(self, url: str) -> None:
         updater = Updater(token=self._token)

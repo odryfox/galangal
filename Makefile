@@ -9,3 +9,6 @@ isort:
 
 linter:
 	PYTHONPATH=galangal/ pylint galangal/
+
+cli:
+	python galangal/manage_cli.py search

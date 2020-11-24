@@ -1,4 +1,4 @@
-from domain.usecases.bot_usecases import RegisterBotWebhookUsecase
+from domain.services import RegexLanguageService
 from domain.usecases.phrase_usages_usecases import (
     SearchPhraseUsagesInDifferentLanguagesUsecase
 )
@@ -7,7 +7,6 @@ from infrastructure.bot import TelegramService
 from infrastructure.external import (
     ReversoContextPhraseUsagesInDifferentLanguagesService
 )
-from infrastructure.services import RegexLanguageService
 from infrastructure.web.config import Config
 from infrastructure.web.views import TelegramMessagesView, TelegramWebhooksView
 
@@ -24,7 +23,6 @@ def create_app(config: Config) -> Flask:
     search_phrase_usages_in_different_languages_usecase = SearchPhraseUsagesInDifferentLanguagesUsecase(
         language_service=regex_language_service,
         phrase_usages_in_different_languages_service=phrase_usages_in_different_languages_service,
-        bot_service=telegram_service,
     )
 
     flask_app = Flask('web_app')
@@ -38,16 +36,13 @@ def create_app(config: Config) -> Flask:
     add(telegram_webhook_path, view_func=TelegramMessagesView.as_view(
         'bot_messages',
         search_phrase_usages_in_different_languages_usecase=search_phrase_usages_in_different_languages_usecase,
+        telegram_service=telegram_service,
     ))
-
-    register_telegram_webhook_usecase = RegisterBotWebhookUsecase(
-        bot_webhook_url=telegram_webhook_url,
-        bot_service=telegram_service,
-    )
 
     add('/bot/webhooks', view_func=TelegramWebhooksView.as_view(
         'bot_webhooks',
-        register_telegram_webhook_usecase=register_telegram_webhook_usecase,
+        telegram_service=telegram_service,
+        telegram_webhook_url=telegram_webhook_url,
     ))
 
     return flask_app
