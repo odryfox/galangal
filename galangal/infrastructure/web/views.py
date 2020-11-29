@@ -1,6 +1,3 @@
-from domain.usecases.phrase_usages_usecases import (
-    SearchPhraseUsagesInDifferentLanguagesUsecase
-)
 from flask import request
 from flask.views import MethodView
 from infrastructure.bot import TelegramService
@@ -37,15 +34,22 @@ class TelegramMessagesView(MethodView):
     def post(self):
 
         body = request.get_json()
-        chat_id = body['message']['chat']['id']
-        message = body['message']['text']
+        try:
+            chat_id = body['message']['chat']['id']
+            message = body['message']['text']
+        except KeyError:
+            chat_id = body['callback_query']['from']['id']
+            word = body['callback_query']['data']
+            self._telegram_service.send_message(chat_id, 'Слово {} добавлено на изучение'.format(word))
+            return '!'
 
         answers = self._agent.query(message, chat_id)
 
         for answer in answers:
-            self._telegram_service.send_message(
+            self._telegram_service.send_phrase_usages_in_different_languages(
                 chat_id=chat_id,
-                message=answer,
+                phrase_usages_in_different_languages=answer,
+                languages=[],
             )
 
         return '!'
