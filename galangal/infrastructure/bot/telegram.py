@@ -16,12 +16,13 @@ class TelegramService:
         updater.bot.delete_webhook()
         updater.bot.set_webhook(url=url)
 
-    def send_message(self, chat_id: str, message: str) -> None:
+    def send_message(self, chat_id: str, message: str, keyboard=None) -> None:
         updater = Updater(token=self._token)
         updater.bot.send_message(
             chat_id=chat_id,
             text=message,
             parse_mode='Markdown',
+            reply_markup=keyboard,
         )
 
     def _build_message_for_phrase_usages_in_different_languages(
@@ -80,10 +81,8 @@ class TelegramService:
             phrase_usages_in_different_languages=phrase_usages_in_different_languages,
             languages=list(phrase_usages_in_different_languages[0].keys()),
         )
-        updater = Updater(token=self._token)
-        updater.bot.send_message(
+        self.send_message(
             chat_id=chat_id,
-            text=response,
-            parse_mode='Markdown',
-            reply_markup=keyboard,
+            message=response,
+            keyboard=keyboard,
         )

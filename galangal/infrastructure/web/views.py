@@ -1,6 +1,6 @@
 from flask import request
 from flask.views import MethodView
-from infrastructure.bot import TelegramService
+from infrastructure.bot.telegram import TelegramService
 from millet import Agent
 
 
