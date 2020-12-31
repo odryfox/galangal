@@ -1,6 +1,9 @@
 import fire
 from domain.services import RegexLanguageService
-from domain.skills import create_skill_classifier
+from domain.usecases.phrase_usages_usecases import (
+    SearchPhraseUsagesInDifferentLanguagesUsecase
+)
+from infrastructure.bot import create_agent
 from infrastructure.cli.config import Config
 from infrastructure.external import (
     ReversoContextPhraseUsagesInDifferentLanguagesService
@@ -30,11 +33,14 @@ class App:
             language_service=regex_language_service,
         )
 
-        skill_classifier = create_skill_classifier(
+        search_phrase_usages_in_different_languages_usecase = SearchPhraseUsagesInDifferentLanguagesUsecase(
             language_service=regex_language_service,
             phrase_usages_in_different_languages_service=phrase_usages_in_different_languages_service,
         )
-        agent = Agent(skill_classifier=skill_classifier)
+
+        agent = create_agent(
+            search_phrase_usages_in_different_languages_usecase=search_phrase_usages_in_different_languages_usecase,
+        )
 
         self.cli = CLI(agent=agent)
 

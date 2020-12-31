@@ -3,7 +3,7 @@ from unittest.mock import Mock
 
 from domain.constants import Language
 from domain.entities import PhraseUsage
-from infrastructure.bot import TelegramService
+from infrastructure.bot.telegram import TelegramService
 
 
 class TestTelegramService:
@@ -12,7 +12,7 @@ class TestTelegramService:
         self.token = 'telegram_token'
         self.service = TelegramService(token=self.token)
 
-    @mock.patch('infrastructure.bot.Updater')
+    @mock.patch('infrastructure.bot.telegram.Updater')
     def test_register_webhook(self, updater_mock):
         url = 'https://server.com/webhook'
 
@@ -24,7 +24,7 @@ class TestTelegramService:
         bot_mock.delete_webhook()
         bot_mock.set_webhook.assert_called_once_with(url=url)
 
-    @mock.patch('infrastructure.bot.Updater')
+    @mock.patch('infrastructure.bot.telegram.Updater')
     def test_send_message(self, updater_mock):
         chat_id = 'terminator_chat_id'
         message = 'I will be back'
@@ -42,6 +42,7 @@ class TestTelegramService:
             chat_id=chat_id,
             text=message,
             parse_mode='Markdown',
+            reply_markup=None,
         )
 
     def test_build_message_for_phrase_usages_in_different_languages__empty_message(self):
@@ -90,10 +91,12 @@ class TestTelegramService:
 """
 
     @mock.patch.object(TelegramService, '_build_message_for_phrase_usages_in_different_languages')
+    @mock.patch.object(TelegramService, '_build_keyboard')
     @mock.patch.object(TelegramService, 'send_message')
     def test_send_phrase_usages_in_different_languages(
         self,
         send_message_mock,
+        build_keyboard_mock,
         build_message_for_phrase_usages_in_different_languages_mock,
     ):
         chat_id = 'terminator_chat_id'
@@ -101,8 +104,11 @@ class TestTelegramService:
 
         build_message_for_phrase_usages_in_different_languages_mock.return_value = message
 
-        phrase_usages_in_different_languages = Mock()
-        languages = Mock()
+        keyboard = mock.Mock()
+        build_keyboard_mock.return_value = keyboard
+
+        phrase_usages_in_different_languages = [{'RU': mock.Mock(), 'EN': mock.Mock()}]
+        languages = ['RU', 'EN']
 
         self.service.send_phrase_usages_in_different_languages(
             chat_id=chat_id,
@@ -114,7 +120,12 @@ class TestTelegramService:
             phrase_usages_in_different_languages=phrase_usages_in_different_languages,
             languages=languages,
         )
+        build_keyboard_mock.assert_called_once_with(
+            phrase_usages_in_different_languages=phrase_usages_in_different_languages,
+            languages=languages,
+        )
         send_message_mock.assert_called_once_with(
             chat_id=chat_id,
             message=message,
+            keyboard=keyboard,
         )
