@@ -1,12 +1,13 @@
-from typing import List
+from typing import Any, List, Tuple
 
 from domain.constants import Language
 from domain.interfaces import PhraseUsagesInDifferentLanguages
+from infrastructure.bot.interfaces import IBot, UserRequest
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater
 
 
-class TelegramService:
+class TelegramBot(IBot):
 
     def __init__(self, token: str):
         self._token = token
@@ -16,11 +17,61 @@ class TelegramService:
         updater.bot.delete_webhook()
         updater.bot.set_webhook(url=url)
 
-    def send_message(self, chat_id: str, message: str, keyboard=None) -> None:
+    def parse_request(self, body: dict) -> Tuple[UserRequest, str]:
+        try:
+            chat_id = body['message']['chat']['id']
+            message = body['message']['text']
+            signal = None
+            data = {}
+        except KeyError:
+            chat_id = body['callback_query']['from']['id']
+            message = None
+            signal = 'add_word'
+            data = body['callback_query']['data']
+
+        user_request = UserRequest(
+            message=message,
+            signal=signal,
+            data=data,
+        )
+
+        return user_request, chat_id
+
+    def send_response(self, response: Any, chat_id: str):
+        if isinstance(response, str):
+            self._send_message(message=response, chat_id=chat_id)
+        elif isinstance(response, list):
+            self._send_phrase_usages_in_different_languages(
+                phrase_usages_in_different_languages=response,
+                chat_id=chat_id,
+            )
+
+    def _send_message(self, message: str, chat_id: str) -> None:
         updater = Updater(token=self._token)
         updater.bot.send_message(
             chat_id=chat_id,
             text=message,
+            parse_mode='Markdown',
+        )
+
+    def _send_phrase_usages_in_different_languages(
+        self,
+        phrase_usages_in_different_languages: PhraseUsagesInDifferentLanguages,
+        chat_id: str,
+    ) -> None:
+
+        response = self._build_message_for_phrase_usages_in_different_languages(
+            phrase_usages_in_different_languages=phrase_usages_in_different_languages,
+            languages=list(phrase_usages_in_different_languages[0].keys()),
+        )
+        keyboard = self._build_keyboard(
+            phrase_usages_in_different_languages=phrase_usages_in_different_languages,
+            languages=list(phrase_usages_in_different_languages[0].keys()),
+        )
+        updater = Updater(token=self._token)
+        updater.bot.send_message(
+            chat_id=chat_id,
+            text=response,
             parse_mode='Markdown',
             reply_markup=keyboard,
         )
@@ -65,24 +116,3 @@ class TelegramService:
 
         keyboard = InlineKeyboardMarkup([[button] for button in buttons])
         return keyboard
-
-    def send_phrase_usages_in_different_languages(
-        self,
-        chat_id: str,
-        phrase_usages_in_different_languages: PhraseUsagesInDifferentLanguages,
-        languages: List[Language]
-    ) -> None:
-
-        response = self._build_message_for_phrase_usages_in_different_languages(
-            phrase_usages_in_different_languages=phrase_usages_in_different_languages,
-            languages=list(phrase_usages_in_different_languages[0].keys()),
-        )
-        keyboard = self._build_keyboard(
-            phrase_usages_in_different_languages=phrase_usages_in_different_languages,
-            languages=list(phrase_usages_in_different_languages[0].keys()),
-        )
-        self.send_message(
-            chat_id=chat_id,
-            message=response,
-            keyboard=keyboard,
-        )

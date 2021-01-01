@@ -3,14 +3,14 @@ from unittest.mock import Mock
 
 from domain.constants import Language
 from domain.entities import PhraseUsage
-from infrastructure.bot.telegram import TelegramService
+from infrastructure.bot.telegram import TelegramBot
 
 
-class TestTelegramService:
+class TestTelegramBot:
 
     def setup_method(self):
         self.token = 'telegram_token'
-        self.service = TelegramService(token=self.token)
+        self.bot = TelegramBot(token=self.token)
 
     @mock.patch('infrastructure.bot.telegram.Updater')
     def test_register_webhook(self, updater_mock):
@@ -19,7 +19,7 @@ class TestTelegramService:
         bot_mock = Mock()
         updater_mock.return_value = Mock(bot=bot_mock)
 
-        self.service.register_webhook(url=url)
+        self.bot.register_webhook(url=url)
 
         bot_mock.delete_webhook()
         bot_mock.set_webhook.assert_called_once_with(url=url)
@@ -32,7 +32,7 @@ class TestTelegramService:
         bot_mock = Mock()
         updater_mock.return_value = Mock(bot=bot_mock)
 
-        self.service.send_message(
+        self.bot._send_message(
             chat_id=chat_id,
             message=message,
         )
@@ -42,11 +42,10 @@ class TestTelegramService:
             chat_id=chat_id,
             text=message,
             parse_mode='Markdown',
-            reply_markup=None,
         )
 
     def test_build_message_for_phrase_usages_in_different_languages__empty_message(self):
-        message = self.service._build_message_for_phrase_usages_in_different_languages(
+        message = self.bot._build_message_for_phrase_usages_in_different_languages(
             phrase_usages_in_different_languages=[],
             languages=[],
         )
@@ -77,7 +76,7 @@ class TestTelegramService:
             },
         ]
 
-        message = self.service._build_message_for_phrase_usages_in_different_languages(
+        message = self.bot._build_message_for_phrase_usages_in_different_languages(
             phrase_usages_in_different_languages=phrase_usages_in_different_languages,
             languages=[Language.EN, Language.RU],
         )
@@ -90,12 +89,12 @@ class TestTelegramService:
 
 """
 
-    @mock.patch.object(TelegramService, '_build_message_for_phrase_usages_in_different_languages')
-    @mock.patch.object(TelegramService, '_build_keyboard')
-    @mock.patch.object(TelegramService, 'send_message')
+    @mock.patch.object(TelegramBot, '_build_message_for_phrase_usages_in_different_languages')
+    @mock.patch.object(TelegramBot, '_build_keyboard')
+    @mock.patch('infrastructure.bot.telegram.Updater')
     def test_send_phrase_usages_in_different_languages(
         self,
-        send_message_mock,
+        updater_mock,
         build_keyboard_mock,
         build_message_for_phrase_usages_in_different_languages_mock,
     ):
@@ -107,13 +106,15 @@ class TestTelegramService:
         keyboard = mock.Mock()
         build_keyboard_mock.return_value = keyboard
 
-        phrase_usages_in_different_languages = [{'RU': mock.Mock(), 'EN': mock.Mock()}]
-        languages = ['RU', 'EN']
+        bot_mock = Mock()
+        updater_mock.return_value = Mock(bot=bot_mock)
 
-        self.service.send_phrase_usages_in_different_languages(
+        phrase_usages_in_different_languages = [{Language.RU: mock.Mock(), Language.EN: mock.Mock()}]
+        languages = [Language.RU, Language.EN]
+
+        self.bot._send_phrase_usages_in_different_languages(
             chat_id=chat_id,
             phrase_usages_in_different_languages=phrase_usages_in_different_languages,
-            languages=languages,
         )
 
         build_message_for_phrase_usages_in_different_languages_mock.assert_called_once_with(
@@ -124,8 +125,10 @@ class TestTelegramService:
             phrase_usages_in_different_languages=phrase_usages_in_different_languages,
             languages=languages,
         )
-        send_message_mock.assert_called_once_with(
+        updater_mock.assert_called_once_with(token=self.token)
+        bot_mock.send_message.assert_called_once_with(
             chat_id=chat_id,
-            message=message,
-            keyboard=keyboard,
+            text=message,
+            parse_mode='Markdown',
+            reply_markup=keyboard,
         )
