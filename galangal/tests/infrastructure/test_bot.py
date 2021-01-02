@@ -10,7 +10,7 @@ class TestTelegramBot:
 
     def setup_method(self):
         self.token = 'telegram_token'
-        self.bot = TelegramBot(token=self.token)
+        self.bot = TelegramBot(token=self.token, agent=mock.Mock())
 
     @mock.patch('infrastructure.bot.telegram.Updater')
     def test_register_webhook(self, updater_mock):

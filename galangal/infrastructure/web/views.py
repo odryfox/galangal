@@ -1,7 +1,6 @@
 from flask import request
 from flask.views import MethodView
 from infrastructure.bot.telegram import TelegramBot
-from millet import Agent
 
 
 class TelegramWebhooksView(MethodView):
@@ -23,10 +22,8 @@ class TelegramWebhooksView(MethodView):
 class TelegramMessagesView(MethodView):
     def __init__(
         self,
-        agent: Agent,
         telegram_bot: TelegramBot,
-    ):
-        self._agent = agent
+    ) -> None:
         self._telegram_bot = telegram_bot
 
         super().__init__()
@@ -34,13 +31,6 @@ class TelegramMessagesView(MethodView):
     def post(self):
 
         body = request.get_json()
-        user_request, chat_id = self._telegram_bot.parse_request(body=body)
-
-        responses = self._agent.query(
-            user_request,
-            chat_id,
-        )
-
-        self._telegram_bot.send_responses(responses, chat_id)
+        self._telegram_bot.execute(request=body)
 
         return '!'

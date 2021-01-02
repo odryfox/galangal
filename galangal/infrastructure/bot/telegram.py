@@ -4,31 +4,33 @@ from domain.constants import Language
 from domain.entities import PhraseToStudy
 from domain.interfaces import PhraseUsagesInDifferentLanguages
 from infrastructure.bot.interfaces import IBot, UserRequest
+from millet import Agent
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater
 
 
 class TelegramBot(IBot):
 
-    def __init__(self, token: str):
+    def __init__(self, token: str, agent: Agent):
         self._token = token
+        super().__init__(agent)
 
     def register_webhook(self, url: str) -> None:
         updater = Updater(token=self._token)
         updater.bot.delete_webhook()
         updater.bot.set_webhook(url=url)
 
-    def parse_request(self, body: dict) -> Tuple[UserRequest, str]:
+    def _parse_request(self, request: dict) -> Tuple[UserRequest, str]:
         try:
-            chat_id = body['message']['chat']['id']
-            message = body['message']['text']
+            chat_id = request['message']['chat']['id']
+            message = request['message']['text']
             signal = None
             data = {}
         except KeyError:
-            chat_id = body['callback_query']['from']['id']
+            chat_id = request['callback_query']['from']['id']
             message = None
             signal = 'add_word'
-            data = body['callback_query']['data']
+            data = request['callback_query']['data']
 
         user_request = UserRequest(
             message=message,
@@ -38,7 +40,7 @@ class TelegramBot(IBot):
 
         return user_request, chat_id
 
-    def send_response(self, response: Any, chat_id: str):
+    def _send_response(self, response: Any, chat_id: str):
         if isinstance(response, str):
             self._send_message(message=response, chat_id=chat_id)
         elif isinstance(response, tuple):

@@ -18,7 +18,6 @@ from infrastructure.web.views import TelegramMessagesView, TelegramWebhooksView
 def create_app(config: Config) -> Flask:
 
     regex_language_service = RegexLanguageService()
-    telegram_bot = TelegramBot(token=config.TELEGRAM_TOKEN)
 
     phrase_usages_in_different_languages_service = ReversoContextPhraseUsagesInDifferentLanguagesService(
         language_service=regex_language_service,
@@ -35,6 +34,7 @@ def create_app(config: Config) -> Flask:
         search_phrase_usages_in_different_languages_usecase=search_phrase_usages_in_different_languages_usecase,
         get_phrases_to_study_from_search_usecase=get_phrases_to_study_from_search_usecase,
     )
+    telegram_bot = TelegramBot(token=config.TELEGRAM_TOKEN, agent=agent)
 
     flask_app = Flask('web_app')
     add = flask_app.add_url_rule
@@ -46,7 +46,6 @@ def create_app(config: Config) -> Flask:
 
     add(telegram_webhook_path, view_func=TelegramMessagesView.as_view(
         'bot_messages',
-        agent=agent,
         telegram_bot=telegram_bot,
     ))
 

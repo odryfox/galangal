@@ -17,7 +17,7 @@ class IPhraseUsagesInDifferentLanguagesService(ABC):
         pass
 
 
-class ILanguageService:
+class ILanguageService(ABC):
 
     @abstractmethod
     def get_language(self, text: str) -> Language:

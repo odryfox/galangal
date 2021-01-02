@@ -8,27 +8,21 @@ from domain.usecases.phrase_usages_usecases import (
 )
 from infrastructure.bot import create_agent
 from infrastructure.bot.cli import CLIBot
-from infrastructure.bot.interfaces import IBot
 from infrastructure.cli.config import Config
 from infrastructure.external import (
     ReversoContextPhraseUsagesInDifferentLanguagesService
 )
-from millet import Agent
 
 
 class CLI:
-    def __init__(self, agent: Agent, bot: IBot):
-        self._agent = agent
-        self._bot = bot
+
+    def __init__(self, cli_bot: CLIBot):
+        self._cli_bot = cli_bot
 
     def search(self):
         while True:
             request = input()
-            user_request, chat_id = self._bot.parse_request(request)
-
-            responses = self._agent.query(user_request, chat_id)
-
-            self._bot.send_responses(responses, chat_id)
+            self._cli_bot.execute(request)
 
 
 class App:
@@ -52,9 +46,9 @@ class App:
             get_phrases_to_study_from_search_usecase=get_phrases_to_study_from_search_usecase,
         )
 
-        bot = CLIBot()
+        cli_bot = CLIBot(agent=agent)
 
-        self.cli = CLI(agent=agent, bot=bot)
+        self.cli = CLI(cli_bot=cli_bot)
 
     def run(self):
         fire.Fire(self.cli)

@@ -5,7 +5,7 @@ from infrastructure.bot.interfaces import IBot, UserRequest
 
 class CLIBot(IBot):
 
-    def parse_request(self, request: str) -> Tuple[UserRequest, str]:
+    def _parse_request(self, request: str) -> Tuple[UserRequest, str]:
 
         if request[0] == '/':
             parts = request.split()
@@ -28,5 +28,5 @@ class CLIBot(IBot):
 
         return user_request, 'console'
 
-    def send_response(self, response: Any, chat_id: str, ):
+    def _send_response(self, response: Any, chat_id: str):
         print(response)
