@@ -101,17 +101,24 @@ class TelegramBot(IBot):
         languages: List[Language],
     ) -> InlineKeyboardMarkup:
 
-        phrases = []
-        language = languages[1]
+        source_language = languages[0]
+        target_language = languages[1]
+
+        phrases = set()
+
         for phrase_usage_in_different_languages in phrase_usages_in_different_languages:
-            phrase_usage = phrase_usage_in_different_languages[language]
-            phrase = phrase_usage.phrase
-            if phrase not in phrases:
-                phrases.append(phrase_usage.phrase)
+            phrase_usage_in_source_language = phrase_usage_in_different_languages[source_language].phrase.lower()
+            phrase_usage_in_target_language = phrase_usage_in_different_languages[target_language].phrase.lower()
+            phrases.add((phrase_usage_in_source_language, phrase_usage_in_target_language))
 
         buttons = []
         for phrase in phrases:
-            button = InlineKeyboardButton(text='➕ {}'.format(phrase), callback_data=phrase)
+            phrase_usage_in_source_language = phrase[0]
+            phrase_usage_in_target_language = phrase[1]
+
+            text = '{} - {}'.format(phrase_usage_in_source_language, phrase_usage_in_target_language)
+
+            button = InlineKeyboardButton(text='➕ {}'.format(text), callback_data=phrase_usage_in_source_language)
             buttons.append(button)
 
         keyboard = InlineKeyboardMarkup([[button] for button in buttons])
