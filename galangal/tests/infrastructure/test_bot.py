@@ -110,11 +110,13 @@ class TestTelegramBot:
         updater_mock.return_value = Mock(bot=bot_mock)
 
         phrase_usages_in_different_languages = [{Language.RU: mock.Mock(), Language.EN: mock.Mock()}]
+        phrases_to_study = mock.Mock()
         languages = [Language.RU, Language.EN]
 
         self.bot._send_phrase_usages_in_different_languages(
             chat_id=chat_id,
             phrase_usages_in_different_languages=phrase_usages_in_different_languages,
+            phrases_to_study=phrases_to_study,
         )
 
         build_message_for_phrase_usages_in_different_languages_mock.assert_called_once_with(
@@ -122,8 +124,7 @@ class TestTelegramBot:
             languages=languages,
         )
         build_keyboard_mock.assert_called_once_with(
-            phrase_usages_in_different_languages=phrase_usages_in_different_languages,
-            languages=languages,
+            phrases_to_study=phrases_to_study,
         )
         updater_mock.assert_called_once_with(token=self.token)
         bot_mock.send_message.assert_called_once_with(

@@ -1,6 +1,7 @@
 from typing import Any, List, Tuple
 
 from domain.constants import Language
+from domain.entities import PhraseToStudy
 from domain.interfaces import PhraseUsagesInDifferentLanguages
 from infrastructure.bot.interfaces import IBot, UserRequest
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
@@ -40,9 +41,10 @@ class TelegramBot(IBot):
     def send_response(self, response: Any, chat_id: str):
         if isinstance(response, str):
             self._send_message(message=response, chat_id=chat_id)
-        elif isinstance(response, list):
+        elif isinstance(response, tuple):
             self._send_phrase_usages_in_different_languages(
-                phrase_usages_in_different_languages=response,
+                phrase_usages_in_different_languages=response[0],
+                phrases_to_study=response[1],
                 chat_id=chat_id,
             )
 
@@ -57,6 +59,7 @@ class TelegramBot(IBot):
     def _send_phrase_usages_in_different_languages(
         self,
         phrase_usages_in_different_languages: PhraseUsagesInDifferentLanguages,
+        phrases_to_study: List[PhraseToStudy],
         chat_id: str,
     ) -> None:
 
@@ -65,8 +68,7 @@ class TelegramBot(IBot):
             languages=list(phrase_usages_in_different_languages[0].keys()),
         )
         keyboard = self._build_keyboard(
-            phrase_usages_in_different_languages=phrase_usages_in_different_languages,
-            languages=list(phrase_usages_in_different_languages[0].keys()),
+            phrases_to_study=phrases_to_study,
         )
         updater = Updater(token=self._token)
         updater.bot.send_message(
@@ -97,28 +99,14 @@ class TelegramBot(IBot):
 
     def _build_keyboard(
         self,
-        phrase_usages_in_different_languages: PhraseUsagesInDifferentLanguages,
-        languages: List[Language],
+        phrases_to_study: List[PhraseToStudy],
     ) -> InlineKeyboardMarkup:
 
-        source_language = languages[0]
-        target_language = languages[1]
-
-        phrases = set()
-
-        for phrase_usage_in_different_languages in phrase_usages_in_different_languages:
-            phrase_usage_in_source_language = phrase_usage_in_different_languages[source_language].phrase.lower()
-            phrase_usage_in_target_language = phrase_usage_in_different_languages[target_language].phrase.lower()
-            phrases.add((phrase_usage_in_source_language, phrase_usage_in_target_language))
-
         buttons = []
-        for phrase in phrases:
-            phrase_usage_in_source_language = phrase[0]
-            phrase_usage_in_target_language = phrase[1]
+        for phrase_to_study in phrases_to_study:
+            text = '{} - {}'.format(phrase_to_study.source_phrase, phrase_to_study.target_phrase)
 
-            text = '{} - {}'.format(phrase_usage_in_source_language, phrase_usage_in_target_language)
-
-            button = InlineKeyboardButton(text='➕ {}'.format(text), callback_data=phrase_usage_in_source_language)
+            button = InlineKeyboardButton(text='➕ {}'.format(text), callback_data=phrase_to_study.source_phrase)
             buttons.append(button)
 
         keyboard = InlineKeyboardMarkup([[button] for button in buttons])

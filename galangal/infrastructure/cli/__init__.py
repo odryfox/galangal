@@ -1,5 +1,8 @@
 import fire
 from domain.services import RegexLanguageService
+from domain.usecases.phrase_to_study_usecases import (
+    GetPhraseToStudyFromSearchUsecase
+)
 from domain.usecases.phrase_usages_usecases import (
     SearchPhraseUsagesInDifferentLanguagesUsecase
 )
@@ -42,8 +45,11 @@ class App:
             phrase_usages_in_different_languages_service=phrase_usages_in_different_languages_service,
         )
 
+        get_phrases_to_study_from_search_usecase = GetPhraseToStudyFromSearchUsecase()
+
         agent = create_agent(
             search_phrase_usages_in_different_languages_usecase=search_phrase_usages_in_different_languages_usecase,
+            get_phrases_to_study_from_search_usecase=get_phrases_to_study_from_search_usecase,
         )
 
         bot = CLIBot()
