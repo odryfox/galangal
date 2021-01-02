@@ -1,6 +1,6 @@
-from typing import Any, Tuple
+from typing import Any, Tuple, Union
 
-from infrastructure.bot.interfaces import IBot, UserRequest
+from infrastructure.bot.interfaces import IBot, UserRequest, UserResponse
 
 
 class CLIBot(IBot):
@@ -28,5 +28,5 @@ class CLIBot(IBot):
 
         return user_request, 'console'
 
-    def _send_response(self, response: Any, chat_id: str):
+    def _send_response(self, response: Union[str, UserResponse], chat_id: str):
         print(response)

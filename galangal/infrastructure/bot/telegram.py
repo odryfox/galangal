@@ -1,9 +1,14 @@
-from typing import Any, List, Tuple
+from typing import Any, List, Tuple, Union
 
 from domain.constants import Language
 from domain.entities import PhraseToStudy
 from domain.interfaces import PhraseUsagesInDifferentLanguages
-from infrastructure.bot.interfaces import IBot, UserRequest
+from infrastructure.bot.interfaces import (
+    IBot,
+    SearchPhrasesResponse,
+    UserRequest,
+    UserResponse
+)
 from millet import Agent
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater
@@ -40,13 +45,13 @@ class TelegramBot(IBot):
 
         return user_request, chat_id
 
-    def _send_response(self, response: Any, chat_id: str):
+    def _send_response(self, response: Union[str, UserResponse], chat_id: str):
         if isinstance(response, str):
             self._send_message(message=response, chat_id=chat_id)
-        elif isinstance(response, tuple):
+        elif isinstance(response, SearchPhrasesResponse):
             self._send_phrase_usages_in_different_languages(
-                phrase_usages_in_different_languages=response[0],
-                phrases_to_study=response[1],
+                phrase_usages_in_different_languages=response.phrase_usages_in_different_languages,
+                phrases_to_study=response.phrases_to_study,
                 chat_id=chat_id,
             )
 

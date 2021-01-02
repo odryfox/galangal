@@ -4,7 +4,7 @@ from domain.usecases.phrase_to_study_usecases import (
 from domain.usecases.phrase_usages_usecases import (
     SearchPhraseUsagesInDifferentLanguagesUsecase
 )
-from infrastructure.bot.interfaces import UserRequest
+from infrastructure.bot.interfaces import SearchPhrasesResponse, UserRequest
 from millet import Skill
 
 
@@ -30,4 +30,8 @@ class PhraseSearchSkill(Skill):
             phrase_usages_in_different_languages=phrase_usages_in_different_languages,
         )
 
-        self.say(tuple([phrase_usages_in_different_languages, phrases_to_study]))
+        response = SearchPhrasesResponse(
+            phrase_usages_in_different_languages=phrase_usages_in_different_languages,
+            phrases_to_study=phrases_to_study,
+        )
+        self.say(response)
