@@ -1,4 +1,4 @@
-from typing import Any, List, Tuple, Union
+from typing import List, Tuple, Union
 
 from domain.constants import Language
 from domain.entities import PhraseToStudy

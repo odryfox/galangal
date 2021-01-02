@@ -1,4 +1,4 @@
-from typing import Any, Tuple, Union
+from typing import Tuple, Union
 
 from infrastructure.bot.interfaces import IBot, UserRequest, UserResponse
 
