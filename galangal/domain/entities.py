@@ -12,3 +12,9 @@ class PhraseUsage:
 
 PhraseUsageInDifferentLanguages = Dict[Language, PhraseUsage]
 PhraseUsagesInDifferentLanguages = List[PhraseUsageInDifferentLanguages]
+
+
+@dataclass
+class PhraseToStudy:
+    source_phrase: str
+    target_phrase: str
