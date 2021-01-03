@@ -20,12 +20,9 @@ jobs:
       run: |
         touch .env
         cat .env
-    - name: Start
+    - name: Start and tests
       run: |
-        make start
-    - name: Test with pytest
-      run: |
-        docker exec galangal_web_1 python -m pytest tests --verbose --disable-warnings --cov=/
+        make tests
     - uses: akhileshns/heroku-deploy@v3.8.8
       with:
         heroku_api_key: ${{secrets.HEROKU_API_KEY}}

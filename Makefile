@@ -9,8 +9,13 @@ down:
 
 start: build up
 
-tests:
-	PYTHONPATH=galangal/ python -m pytest galangal/tests --verbose --disable-warnings --cov=galangal/
+tests_build:
+	docker-compose -f docker-compose.tests.yml build --pull
+
+tests_up:
+	docker-compose -f docker-compose.tests.yml up
+
+tests: tests_build tests_up
 
 isort:
 	PYTHONPATH=galangal/ isort galangal/ -m=3

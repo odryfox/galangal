@@ -1,0 +1,11 @@
+version: "3"
+
+services:
+
+  tests:
+    build: ./galangal
+    volumes:
+      - ./galangal:/code
+    command: bash -c "python -m pytest tests --verbose --disable-warnings --cov=."
+    env_file:
+      - .env
