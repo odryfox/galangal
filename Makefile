@@ -1,5 +1,13 @@
+build:
+	docker-compose -f docker-compose.dev.yml build --pull
+
 up:
-	python galangal/manage_web.py
+	docker-compose -f docker-compose.dev.yml up -d
+
+down:
+	docker-compose -f docker-compose.dev.yml down -v
+
+start: build up
 
 tests:
 	PYTHONPATH=galangal/ python -m pytest galangal/tests --verbose --disable-warnings --cov=galangal/

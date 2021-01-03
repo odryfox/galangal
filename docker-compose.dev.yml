@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+  web:
+    build: ./galangal
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./galangal:/code
+    restart: always
+    command: bash -c "python manage_web.py"
+    env_file:
+      - .env
