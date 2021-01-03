@@ -2,7 +2,7 @@ from unittest import mock
 from unittest.mock import Mock
 
 from domain.constants import Language
-from domain.entities import PhraseUsage, PhraseToStudy
+from domain.entities import PhraseToStudy, PhraseUsage
 from infrastructure.bot import AddPhraseToStudySignal
 from infrastructure.bot.interfaces import SearchPhrasesResponse
 from infrastructure.bot.telegram import TelegramBot
@@ -207,7 +207,7 @@ class TestTelegramBot:
 
     @mock.patch.object(TelegramBot, '_send_message')
     @mock.patch.object(TelegramBot, '_send_phrase_usages_in_different_languages')
-    def test_send_response__search_phrases_reponse(self, send_phrase_usages_in_different_languages_mock, send_message_mock):
+    def test_send_response__search_phrases_response(self, send_phrase_usages_in_different_languages_mock, send_message_mock):
         response = SearchPhrasesResponse(
             phrase_usages_in_different_languages=mock.Mock(),
             phrases_to_study=mock.Mock(),
@@ -225,7 +225,7 @@ class TestTelegramBot:
 
     @mock.patch.object(TelegramBot, '_send_message')
     @mock.patch.object(TelegramBot, '_send_phrase_usages_in_different_languages')
-    def test_send_response__search_phrases_reponse(self, send_phrase_usages_in_different_languages_mock, send_message_mock):
+    def test_send_response__unknown_type_of_response(self, send_phrase_usages_in_different_languages_mock, send_message_mock):
         response = 100500
         chat_id = '100500'
 
