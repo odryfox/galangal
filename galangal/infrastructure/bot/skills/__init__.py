@@ -1,2 +1,2 @@
-from .add_phrase_to_study_skill import AddPhraseToStudySkillSkill
+from .add_phrase_to_study_skill import AddPhraseToStudySkill
 from .phrase_search_skill import PhraseSearchSkill

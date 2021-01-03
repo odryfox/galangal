@@ -6,11 +6,8 @@ from domain.usecases.phrase_to_study_usecases import (
 from domain.usecases.phrase_usages_usecases import (
     SearchPhraseUsagesInDifferentLanguagesUsecase
 )
-from infrastructure.bot.interfaces import UserRequest
-from infrastructure.bot.skills import (
-    AddPhraseToStudySkillSkill,
-    PhraseSearchSkill
-)
+from infrastructure.bot.interfaces import AddPhraseToStudySignal, UserRequest
+from infrastructure.bot.skills import AddPhraseToStudySkill, PhraseSearchSkill
 from millet import Agent, Skill
 
 
@@ -22,8 +19,8 @@ def _create_skill_classifier(
     def skill_classifier(message: UserRequest) -> List[Skill]:
         skills = []
 
-        if message.signal == 'add_word':
-            skill = AddPhraseToStudySkillSkill()
+        if isinstance(message.signal, AddPhraseToStudySignal):
+            skill = AddPhraseToStudySkill()
             skills.append(skill)
         elif message.message is not None:
             skill = PhraseSearchSkill(

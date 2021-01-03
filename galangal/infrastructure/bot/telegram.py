@@ -4,6 +4,7 @@ from domain.constants import Language
 from domain.entities import PhraseToStudy
 from domain.interfaces import PhraseUsagesInDifferentLanguages
 from infrastructure.bot.interfaces import (
+    AddPhraseToStudySignal,
     IBot,
     SearchPhrasesResponse,
     UserRequest,
@@ -34,7 +35,7 @@ class TelegramBot(IBot):
         except KeyError:
             chat_id = request['callback_query']['from']['id']
             message = None
-            signal = 'add_word'
+            signal = AddPhraseToStudySignal()
             data = request['callback_query']['data']
 
         user_request = UserRequest(

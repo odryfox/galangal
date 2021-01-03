@@ -6,10 +6,18 @@ from domain.entities import PhraseToStudy, PhraseUsagesInDifferentLanguages
 from millet import Agent
 
 
+class UserSignal(ABC):
+    pass
+
+
+class AddPhraseToStudySignal(UserSignal):
+    pass
+
+
 @dataclass
 class UserRequest:
     message: Optional[str]
-    signal: Optional[str]
+    signal: Optional[UserSignal]
     data: dict
 
 
