@@ -28,6 +28,8 @@ jobs:
             login odryfox@gmail.com
             password ${{ secrets.HEROKU_API_KEY }}
         EOF
+    - name: Set config
+      run: git config user.name "Heroku-Deploy" && git config user.email "odryfox@gmail.com"
     - name: Add remote
       run: heroku git:remote --app galangal
     - name: Remote
