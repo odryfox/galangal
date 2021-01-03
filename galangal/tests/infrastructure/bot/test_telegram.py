@@ -2,7 +2,7 @@ from unittest import mock
 from unittest.mock import Mock
 
 from domain.constants import Language
-from domain.entities import PhraseUsage
+from domain.entities import PhraseUsage, PhraseToStudy
 from infrastructure.bot import AddPhraseToStudySignal
 from infrastructure.bot.interfaces import SearchPhrasesResponse
 from infrastructure.bot.telegram import TelegramBot
@@ -135,6 +135,32 @@ class TestTelegramBot:
             parse_mode='Markdown',
             reply_markup=keyboard,
         )
+
+    def test_build_keyboard__phrases(self):
+        phrases_to_study = [
+            PhraseToStudy(
+                source_phrase='source_phrase',
+                target_phrase='target_phrase',
+            )
+        ]
+
+        keyboard = self.bot._build_keyboard(phrases_to_study=phrases_to_study)
+
+        assert len(keyboard.inline_keyboard) == 1
+        line = keyboard.inline_keyboard[0]
+
+        assert len(line) == 1
+        button = line[0]
+
+        assert button.text == '➕ source_phrase - target_phrase'
+        assert button.callback_data == 'source_phrase'
+
+    def test_build_keyboard__empty_phrases(self):
+        phrases_to_study = []
+
+        keyboard = self.bot._build_keyboard(phrases_to_study=phrases_to_study)
+
+        assert keyboard.inline_keyboard == []
 
     def test_parse_request__without_signal(self):
         request = {
