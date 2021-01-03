@@ -30,5 +30,11 @@ jobs:
         EOF
     - name: Add remote
       run: heroku git:remote --app galangal
+    - name: Remote
+      run: git remote -v
+    - name: Branches
+      run: git --no-pager branch -va
+    - name: Log
+      run: git --no-pager log
     - name: Push
       run: git push heroku master:refs/heads/master
