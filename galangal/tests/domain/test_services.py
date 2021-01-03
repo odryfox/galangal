@@ -4,8 +4,9 @@ from domain.services import RegexLanguageService
 
 class TestRegexLanguageService:
 
-    def setup_class(self):
-        self.service = RegexLanguageService()
+    @classmethod
+    def setup_class(cls):
+        cls.service = RegexLanguageService()
 
     def test_english_phrase(self):
         language = self.service.get_language(text='I will be back')
