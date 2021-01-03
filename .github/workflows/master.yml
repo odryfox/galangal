@@ -31,4 +31,4 @@ jobs:
     - name: Add remote
       run: heroku git:remote --app galangal
     - name: Push
-      run: git push heroku
+      run: git push heroku master:refs/heads/master
