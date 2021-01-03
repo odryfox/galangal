@@ -32,13 +32,8 @@ jobs:
       run: cat ~/.netrc
     - name: Set config
       run: git config user.name "Heroku-Deploy" && git config user.email "odryfox@gmail.com"
-    - name: Add remote
-      run: heroku git:remote --app galangal
-    - name: Remote
-      run: git remote -v
-    - name: Branches
-      run: git --no-pager branch -va
-    - name: Log
-      run: git --no-pager log
-    - name: Push
-      run: git push https://heroku:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/galangal.git master
+    - name: Deploy
+      env:
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        HEROKU_APP_NAME: "galangal"
+      run: git fetch --prune --unshallow && git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git origin/master:master
