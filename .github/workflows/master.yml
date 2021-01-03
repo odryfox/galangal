@@ -41,4 +41,4 @@ jobs:
     - name: Log
       run: git --no-pager log
     - name: Push
-      run: git push heroku master:refs/heads/master
+      run: git push https://heroku:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/galangal.git master
