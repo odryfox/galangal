@@ -52,3 +52,7 @@ class App:
 
     def run(self):
         fire.Fire(self.cli)
+
+
+def create_app(config: Config) -> App:
+    return App(config=config)
