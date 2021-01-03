@@ -148,7 +148,7 @@ class TestTelegramBot:
 
         assert chat_id == '100500'
         assert user_request.message == 'I will be back'
-        assert user_request.signal == None
+        assert user_request.signal is None
         assert user_request.data == {}
 
     def test_parse_request__with_signal(self):
@@ -162,7 +162,7 @@ class TestTelegramBot:
         user_request, chat_id = self.bot._parse_request(request)
 
         assert chat_id == '100500'
-        assert user_request.message == None
+        assert user_request.message is None
         assert isinstance(user_request.signal, AddPhraseToStudySignal)
         assert user_request.data == 'data'
 
