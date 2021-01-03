@@ -18,9 +18,16 @@ jobs:
     - name: Start and tests
       run: |
         make tests
-    - uses: akhileshns/heroku-deploy@v3.8.8
-      with:
-        heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-        heroku_app_name: "galangal"
-        heroku_email: "oryfox@gmail.com"
-        branch: "master"
+    - name: Create heroku auth file
+      run: `cat >~/.netrc <<EOF
+machine api.heroku.com
+    login odryfox@gmail.com
+    password ${{ secrets.HEROKU_API_KEY }}
+machine git.heroku.com
+    login odryfox@gmail.com
+    password ${{ secrets.HEROKU_API_KEY }}
+EOF`
+    - name: Add remote
+      run: heroku git:remote --app galangal
+    - name: Push
+      run: git push heroku
