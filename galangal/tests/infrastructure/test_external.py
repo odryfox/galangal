@@ -33,7 +33,7 @@ class TestReversoContextPhraseUsagesInDifferentLanguagesService:
         assert 'User-Agent' in actual_headers
         assert 'python-requests' not in actual_headers['User-Agent']
 
-    @mock.patch('galangal.infrastructure.external.requests.get')
+    @mock.patch('infrastructure.external.requests.get')
     def test_search(self, mock_get):
         self.service._language_service.get_language.return_value = Language.EN
 
