@@ -19,14 +19,15 @@ jobs:
       run: |
         make tests
     - name: Create heroku auth file
-      run: `cat >~/.netrc <<EOF
-machine api.heroku.com
-    login odryfox@gmail.com
-    password ${{ secrets.HEROKU_API_KEY }}
-machine git.heroku.com
-    login odryfox@gmail.com
-    password ${{ secrets.HEROKU_API_KEY }}
-EOF`
+      run: |
+        cat >~/.netrc <<EOF
+        machine api.heroku.com
+            login odryfox@gmail.com
+            password ${{ secrets.HEROKU_API_KEY }}
+        machine git.heroku.com
+            login odryfox@gmail.com
+            password ${{ secrets.HEROKU_API_KEY }}
+        EOF
     - name: Add remote
       run: heroku git:remote --app galangal
     - name: Push
