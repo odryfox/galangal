@@ -27,7 +27,7 @@ class UserResponse(ABC):
 
 
 @dataclass
-class SearchPhrasesResponse(ABC):
+class SearchPhrasesResponse(UserResponse):
     phrase_usages_in_different_languages: PhraseUsagesInDifferentLanguages
     phrases_to_study: List[PhraseToStudy]
 

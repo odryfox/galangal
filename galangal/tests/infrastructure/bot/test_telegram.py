@@ -3,6 +3,8 @@ from unittest.mock import Mock
 
 from domain.constants import Language
 from domain.entities import PhraseUsage
+from infrastructure.bot import AddPhraseToStudySignal
+from infrastructure.bot.interfaces import SearchPhrasesResponse
 from infrastructure.bot.telegram import TelegramBot
 
 
@@ -133,3 +135,75 @@ class TestTelegramBot:
             parse_mode='Markdown',
             reply_markup=keyboard,
         )
+
+    def test_parse_request__without_signal(self):
+        request = {
+            'message': {
+                'chat': {'id': '100500'},
+                'text': 'I will be back'
+            }
+        }
+
+        user_request, chat_id = self.bot._parse_request(request)
+
+        assert chat_id == '100500'
+        assert user_request.message == 'I will be back'
+        assert user_request.signal == None
+        assert user_request.data == {}
+
+    def test_parse_request__with_signal(self):
+        request = {
+            'callback_query': {
+                'from': {'id': '100500'},
+                'data': 'data'
+            }
+        }
+
+        user_request, chat_id = self.bot._parse_request(request)
+
+        assert chat_id == '100500'
+        assert user_request.message == None
+        assert isinstance(user_request.signal, AddPhraseToStudySignal)
+        assert user_request.data == 'data'
+
+    @mock.patch.object(TelegramBot, '_send_message')
+    @mock.patch.object(TelegramBot, '_send_phrase_usages_in_different_languages')
+    def test_send_response__str_response(self, send_phrase_usages_in_different_languages_mock, send_message_mock):
+        response = 'response'
+        chat_id = '100500'
+
+        self.bot._send_response(response=response, chat_id=chat_id)
+
+        send_message_mock.assert_called_once_with(
+            message=response, chat_id=chat_id
+        )
+        send_phrase_usages_in_different_languages_mock.assert_not_called()
+
+    @mock.patch.object(TelegramBot, '_send_message')
+    @mock.patch.object(TelegramBot, '_send_phrase_usages_in_different_languages')
+    def test_send_response__search_phrases_reponse(self, send_phrase_usages_in_different_languages_mock, send_message_mock):
+        response = SearchPhrasesResponse(
+            phrase_usages_in_different_languages=mock.Mock(),
+            phrases_to_study=mock.Mock(),
+        )
+        chat_id = '100500'
+
+        self.bot._send_response(response=response, chat_id=chat_id)
+
+        send_message_mock.assert_not_called()
+        send_phrase_usages_in_different_languages_mock.assert_called_once_with(
+            phrase_usages_in_different_languages=response.phrase_usages_in_different_languages,
+            phrases_to_study=response.phrases_to_study,
+            chat_id=chat_id,
+        )
+
+    @mock.patch.object(TelegramBot, '_send_message')
+    @mock.patch.object(TelegramBot, '_send_phrase_usages_in_different_languages')
+    def test_send_response__search_phrases_reponse(self, send_phrase_usages_in_different_languages_mock, send_message_mock):
+        response = 100500
+        chat_id = '100500'
+
+        self.bot._send_response(response=response, chat_id=chat_id)
+
+        send_message_mock.assert_not_called()
+        send_phrase_usages_in_different_languages_mock.assert_not_called()
