@@ -12,7 +12,12 @@ class TestTelegramBot:
 
     def setup_method(self):
         self.token = 'telegram_token'
-        self.bot = TelegramBot(token=self.token, agent=mock.Mock())
+        self.callback_data_dao = mock.Mock()
+        self.bot = TelegramBot(
+            token=self.token,
+            agent=mock.Mock(),
+            callback_data_dao=self.callback_data_dao,
+        )
 
     @mock.patch('infrastructure.bot.telegram.Updater')
     def test_register_webhook(self, updater_mock):
@@ -144,7 +149,21 @@ class TestTelegramBot:
             )
         ]
 
+        self.callback_data_dao.save_data.return_value = 'key'
+
+        callback_data = {
+            'signal': AddPhraseToStudySignal.key,
+            'data': {
+                'source_phrase': 'source_phrase',
+                'target_phrase': 'target_phrase',
+            }
+        }
+
         keyboard = self.bot._build_keyboard(phrases_to_study=phrases_to_study)
+
+        self.callback_data_dao.save_data.assert_called_once_with(
+            data=callback_data
+        )
 
         assert len(keyboard.inline_keyboard) == 1
         line = keyboard.inline_keyboard[0]
@@ -153,7 +172,7 @@ class TestTelegramBot:
         button = line[0]
 
         assert button.text == '➕ source_phrase - target_phrase'
-        assert button.callback_data == 'source_phrase'
+        assert button.callback_data == 'key'
 
     def test_build_keyboard__empty_phrases(self):
         phrases_to_study = []
@@ -181,16 +200,23 @@ class TestTelegramBot:
         request = {
             'callback_query': {
                 'from': {'id': '100500'},
-                'data': 'data'
+                'data': 'key',
             }
+        }
+
+        self.callback_data_dao.load_data.return_value = {
+            'signal': AddPhraseToStudySignal.key,
+            'data': {'1': 1},
         }
 
         user_request, chat_id = self.bot._parse_request(request)
 
+        self.callback_data_dao.load_data.assert_called_once_with(key='key')
+
         assert chat_id == '100500'
         assert user_request.message is None
         assert isinstance(user_request.signal, AddPhraseToStudySignal)
-        assert user_request.data == 'data'
+        assert user_request.data == {'1': 1}
 
     @mock.patch.object(TelegramBot, '_send_message')
     @mock.patch.object(TelegramBot, '_send_phrase_usages_in_different_languages')

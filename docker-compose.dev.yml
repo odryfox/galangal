@@ -11,3 +11,26 @@ services:
     command: bash -c "python manage_web.py"
     env_file:
       - .env
+    environment:
+      REDIS_URL: "redis://:yourpassword@redis:6379/0"
+      TEST_REDIS_URL: "redis://:yourpassword@redis_test:6379/0"
+    depends_on:
+      - redis
+      - redis_test
+
+  redis:
+    image: "redis:alpine"
+    volumes:
+      - ./data/redis:/data
+    command: redis-server --requirepass yourpassword --appendonly yes
+    ports:
+      - "6379:6379"
+
+  redis_test:
+    image: "redis:alpine"
+    command: redis-server --requirepass yourpassword --save
+    ports:
+      - "6380:6379"
+
+volumes:
+  data:

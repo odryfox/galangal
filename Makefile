@@ -13,7 +13,7 @@ tests_build:
 	docker-compose -f docker-compose.tests.yml build --pull
 
 tests_up:
-	docker-compose -f docker-compose.tests.yml up
+	docker-compose -f docker-compose.tests.yml up --abort-on-container-exit
 
 tests: tests_build tests_up
 

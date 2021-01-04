@@ -7,11 +7,17 @@ from millet import Agent
 
 
 class UserSignal(ABC):
-    pass
+
+    @property
+    @abstractmethod
+    def key(self) -> str:
+        pass
 
 
 class AddPhraseToStudySignal(UserSignal):
-    pass
+
+    def key(self) -> str:
+        return 'AddPhraseToStudySignal'
 
 
 @dataclass
@@ -52,4 +58,15 @@ class IBot(ABC):
 
     @abstractmethod
     def _send_response(self, response: Union[str, UserResponse], chat_id: str) -> None:
+        pass
+
+
+class ICallbackDataDAO(ABC):
+
+    @abstractmethod
+    def save_data(self, data: dict) -> str:
+        pass
+
+    @abstractmethod
+    def load_data(self, key: str) -> Optional[dict]:
         pass

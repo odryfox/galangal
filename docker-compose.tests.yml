@@ -9,3 +9,13 @@ services:
     command: bash -c "python -m pytest tests --verbose --disable-warnings --cov=."
     env_file:
       - .env
+    environment:
+      TEST_REDIS_URL: "redis://:yourpassword@redis_test:6379/0"
+    depends_on:
+      - redis_test
+
+  redis_test:
+    image: "redis:alpine"
+    command: redis-server --requirepass yourpassword --save
+    ports:
+      - "6380:6379"

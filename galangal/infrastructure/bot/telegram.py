@@ -6,6 +6,7 @@ from domain.interfaces import PhraseUsagesInDifferentLanguages
 from infrastructure.bot.interfaces import (
     AddPhraseToStudySignal,
     IBot,
+    ICallbackDataDAO,
     SearchPhrasesResponse,
     UserRequest,
     UserResponse
@@ -17,8 +18,14 @@ from telegram.ext import Updater
 
 class TelegramBot(IBot):
 
-    def __init__(self, token: str, agent: Agent):
+    def __init__(
+        self,
+        token: str,
+        agent: Agent,
+        callback_data_dao: ICallbackDataDAO,
+    ):
         self._token = token
+        self._callback_data_dao = callback_data_dao
         super().__init__(agent)
 
     def register_webhook(self, url: str) -> None:
@@ -35,8 +42,13 @@ class TelegramBot(IBot):
         except KeyError:
             chat_id = request['callback_query']['from']['id']
             message = None
-            signal = AddPhraseToStudySignal()
-            data = request['callback_query']['data']
+            signal = None
+            data = {}
+            callback_key = request['callback_query']['data']
+            callback_data = self._callback_data_dao.load_data(key=callback_key)
+            if callback_data and callback_data['signal'] == AddPhraseToStudySignal.key:
+                signal = AddPhraseToStudySignal()
+                data = callback_data['data']
 
         user_request = UserRequest(
             message=message,
@@ -114,7 +126,17 @@ class TelegramBot(IBot):
         for phrase_to_study in phrases_to_study:
             text = '{} - {}'.format(phrase_to_study.source_phrase, phrase_to_study.target_phrase)
 
-            button = InlineKeyboardButton(text='➕ {}'.format(text), callback_data=phrase_to_study.source_phrase)
+            callback_data = {
+                'signal': AddPhraseToStudySignal.key,
+                'data': {
+                    'source_phrase': phrase_to_study.source_phrase,
+                    'target_phrase': phrase_to_study.target_phrase,
+                }
+            }
+
+            callback_key = self._callback_data_dao.save_data(data=callback_data)
+
+            button = InlineKeyboardButton(text='➕ {}'.format(text), callback_data=callback_key)
             buttons.append(button)
 
         keyboard = InlineKeyboardMarkup([[button] for button in buttons])
