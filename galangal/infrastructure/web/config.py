@@ -18,7 +18,7 @@ class Config(ABC):
 class EnvironmentConfig(Config):
 
     DEBUG = os.environ.get('DEBUG', False)
-    TELEGRAM_TOKEN = os.environ['TELEGRAM_TOKEN']
-    TELEGRAM_WEBHOOK_BASE_URL = os.environ['TELEGRAM_WEBHOOK_BASE_URL']
+    TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
+    TELEGRAM_WEBHOOK_BASE_URL = os.environ.get('TELEGRAM_WEBHOOK_BASE_URL')
     REDIS_URL = os.environ.get('REDIS_URL')
     TEST_REDIS_URL = os.environ.get('TEST_REDIS_URL')
