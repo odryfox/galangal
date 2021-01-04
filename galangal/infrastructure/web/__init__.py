@@ -12,7 +12,11 @@ from infrastructure.external import (
     ReversoContextPhraseUsagesInDifferentLanguagesService
 )
 from infrastructure.web.config import Config
-from infrastructure.web.views import TelegramMessagesView, TelegramWebhooksView
+from infrastructure.web.views import (
+    HealthCheckView,
+    TelegramMessagesView,
+    TelegramWebhooksView
+)
 
 
 def create_app(config: Config) -> Flask:
@@ -54,5 +58,7 @@ def create_app(config: Config) -> Flask:
         telegram_bot=telegram_bot,
         telegram_webhook_url=telegram_webhook_url,
     ))
+
+    add('/health-check', view_func=HealthCheckView.as_view('Health Check'))
 
     return flask_app
