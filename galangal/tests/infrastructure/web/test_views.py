@@ -1,12 +1,12 @@
 from infrastructure.web import create_app
-from infrastructure.web.config import EnvironmentConfig
+from infrastructure.web.config import TestEnvironmentConfig
 
 
 class TestHealthCheckView:
 
     @classmethod
     def setup_class(cls):
-        config = EnvironmentConfig()
+        config = TestEnvironmentConfig()
         app = create_app(config=config)
         cls.client = app.test_client()
 
