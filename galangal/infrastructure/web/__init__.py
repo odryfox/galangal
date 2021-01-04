@@ -13,7 +13,11 @@ from infrastructure.external import (
 )
 from infrastructure.redis.callback_data_dao import RedisCallbackDataDAO
 from infrastructure.web.config import Config
-from infrastructure.web.views import TelegramMessagesView, TelegramWebhooksView
+from infrastructure.web.views import (
+    HealthCheckView,
+    TelegramMessagesView,
+    TelegramWebhooksView
+)
 
 
 def create_app(config: Config) -> Flask:
@@ -61,5 +65,7 @@ def create_app(config: Config) -> Flask:
         telegram_bot=telegram_bot,
         telegram_webhook_url=telegram_webhook_url,
     ))
+
+    add('/health-check', view_func=HealthCheckView.as_view('Health Check'))
 
     return flask_app

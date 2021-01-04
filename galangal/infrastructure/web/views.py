@@ -1,4 +1,4 @@
-from flask import request
+from flask import Response, request
 from flask.views import MethodView
 from infrastructure.bot.telegram import TelegramBot
 
@@ -34,3 +34,9 @@ class TelegramMessagesView(MethodView):
         self._telegram_bot.execute(request=body)
 
         return '!'
+
+
+class HealthCheckView(MethodView):
+
+    def get(self):
+        return Response(status=200)
