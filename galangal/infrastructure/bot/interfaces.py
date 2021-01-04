@@ -16,8 +16,7 @@ class UserSignal(ABC):
 
 class AddPhraseToStudySignal(UserSignal):
 
-    def key(self) -> str:
-        return 'AddPhraseToStudySignal'
+    key = 'AddPhraseToStudySignal'
 
 
 @dataclass
