@@ -7,11 +7,17 @@ from millet import Agent
 
 
 class UserSignal(ABC):
-    pass
+
+    @property
+    @abstractmethod
+    def key(self) -> str:
+        pass
 
 
 class AddPhraseToStudySignal(UserSignal):
-    pass
+
+    def key(self) -> str:
+        return 'AddPhraseToStudySignal'
 
 
 @dataclass

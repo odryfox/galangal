@@ -46,10 +46,9 @@ class TelegramBot(IBot):
             data = {}
             callback_key = request['callback_query']['data']
             callback_data = self._callback_data_dao.load_data(key=callback_key)
-            if callback_data:
-                if callback_data['signal'] == 'AddPhraseToStudySignal':
-                    signal = AddPhraseToStudySignal()
-                    data = callback_data['data']
+            if callback_data and callback_data['signal'] == AddPhraseToStudySignal.key:
+                signal = AddPhraseToStudySignal()
+                data = callback_data['data']
 
         user_request = UserRequest(
             message=message,
@@ -128,7 +127,7 @@ class TelegramBot(IBot):
             text = '{} - {}'.format(phrase_to_study.source_phrase, phrase_to_study.target_phrase)
 
             callback_data = {
-                'signal': 'AddPhraseToStudySignal',
+                'signal': AddPhraseToStudySignal.key,
                 'data': {
                     'source_phrase': phrase_to_study.source_phrase,
                     'target_phrase': phrase_to_study.target_phrase,

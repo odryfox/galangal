@@ -152,7 +152,7 @@ class TestTelegramBot:
         self.callback_data_dao.save_data.return_value = 'key'
 
         callback_data = {
-            'signal': 'AddPhraseToStudySignal',
+            'signal': AddPhraseToStudySignal.key,
             'data': {
                 'source_phrase': 'source_phrase',
                 'target_phrase': 'target_phrase',
@@ -205,7 +205,7 @@ class TestTelegramBot:
         }
 
         self.callback_data_dao.load_data.return_value = {
-            'signal': 'AddPhraseToStudySignal',
+            'signal': AddPhraseToStudySignal.key,
             'data': {'1': 1},
         }
 
