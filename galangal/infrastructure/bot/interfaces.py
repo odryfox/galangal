@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, List, Optional, Tuple, Union
+from typing import Any, List, Optional, Union
 
 from domain.entities import PhraseToStudy, PhraseUsagesInDifferentLanguages
 from millet import Agent
@@ -21,6 +21,7 @@ class AddPhraseToStudySignal(UserSignal):
 
 @dataclass
 class UserRequest:
+    chat_id: str
     message: Optional[str]
     signal: Optional[UserSignal]
     data: dict
@@ -43,12 +44,12 @@ class IBot(ABC):
         self._agent = agent
 
     def execute(self, request: Any):
-        user_request, chat_id = self._parse_request(request)
-        responses = self._agent.query(message=user_request, user_id=chat_id)
-        self._send_responses(responses=responses, chat_id=chat_id)
+        user_request = self._parse_request(request)
+        responses = self._agent.query(message=user_request, user_id=user_request.chat_id)
+        self._send_responses(responses=responses, chat_id=user_request.chat_id)
 
     @abstractmethod
-    def _parse_request(self, request: Any) -> Tuple[UserRequest, str]:
+    def _parse_request(self, request: Any) -> UserRequest:
         pass
 
     def _send_responses(self, responses: List[Union[str, UserResponse]], chat_id: str):

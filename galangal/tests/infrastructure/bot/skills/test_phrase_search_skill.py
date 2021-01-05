@@ -24,6 +24,7 @@ class TestPhraseSearchSkill:
         self.get_phrases_to_study_from_search_usecase_mock.execute.return_value = phrases_to_study
 
         user_request = UserRequest(
+            chat_id='100500',
             message='I will be back',
             signal=None,
             data={},

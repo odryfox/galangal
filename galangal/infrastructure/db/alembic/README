@@ -1,0 +1,1 @@
+infrastructure/db/alembic/makemigration.sh -m "Add users"

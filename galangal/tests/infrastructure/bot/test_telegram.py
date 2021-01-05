@@ -189,9 +189,9 @@ class TestTelegramBot:
             }
         }
 
-        user_request, chat_id = self.bot._parse_request(request)
+        user_request = self.bot._parse_request(request)
 
-        assert chat_id == '100500'
+        assert user_request.chat_id == '100500'
         assert user_request.message == 'I will be back'
         assert user_request.signal is None
         assert user_request.data == {}
@@ -209,11 +209,11 @@ class TestTelegramBot:
             'data': {'1': 1},
         }
 
-        user_request, chat_id = self.bot._parse_request(request)
+        user_request = self.bot._parse_request(request)
 
         self.callback_data_dao.load_data.assert_called_once_with(key='key')
 
-        assert chat_id == '100500'
+        assert user_request.chat_id == '100500'
         assert user_request.message is None
         assert isinstance(user_request.signal, AddPhraseToStudySignal)
         assert user_request.data == {'1': 1}

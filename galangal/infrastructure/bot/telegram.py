@@ -1,4 +1,4 @@
-from typing import List, Tuple, Union
+from typing import List, Union
 
 from domain.constants import Language
 from domain.entities import PhraseToStudy
@@ -33,7 +33,7 @@ class TelegramBot(IBot):
         updater.bot.delete_webhook()
         updater.bot.set_webhook(url=url)
 
-    def _parse_request(self, request: dict) -> Tuple[UserRequest, str]:
+    def _parse_request(self, request: dict) -> UserRequest:
         try:
             chat_id = request['message']['chat']['id']
             message = request['message']['text']
@@ -51,12 +51,13 @@ class TelegramBot(IBot):
                 data = callback_data['data']
 
         user_request = UserRequest(
+            chat_id=str(chat_id),
             message=message,
             signal=signal,
             data=data,
         )
 
-        return user_request, chat_id
+        return user_request
 
     def _send_response(self, response: Union[str, UserResponse], chat_id: str):
         if isinstance(response, str):

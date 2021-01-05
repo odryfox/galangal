@@ -1,4 +1,4 @@
-from typing import Tuple, Union
+from typing import Union
 
 from infrastructure.bot.interfaces import (
     AddPhraseToStudySignal,
@@ -10,7 +10,7 @@ from infrastructure.bot.interfaces import (
 
 class CLIBot(IBot):
 
-    def _parse_request(self, request: str) -> Tuple[UserRequest, str]:
+    def _parse_request(self, request: str) -> UserRequest:
 
         if request[0] == '/':
             parts = request.split()
@@ -32,12 +32,13 @@ class CLIBot(IBot):
             data = {}
 
         user_request = UserRequest(
+            chat_id='console',
             message=message,
             signal=signal,
             data=data,
         )
 
-        return user_request, 'console'
+        return user_request
 
     def _send_response(self, response: Union[str, UserResponse], chat_id: str):
         print(response)

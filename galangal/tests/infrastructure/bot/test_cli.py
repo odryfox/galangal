@@ -12,9 +12,9 @@ class TestCLIBot:
     def test_parse_request__without_signal(self):
         request = 'I will be back'
 
-        user_request, chat_id = self.bot._parse_request(request=request)
+        user_request = self.bot._parse_request(request=request)
 
-        assert chat_id, 'console'
+        assert user_request.chat_id, 'console'
         assert user_request.message == 'I will be back'
         assert user_request.signal is None
         assert user_request.data == {}
@@ -22,9 +22,9 @@ class TestCLIBot:
     def test_parse_request__with_signal(self):
         request = '/add_phrase_to_study data'
 
-        user_request, chat_id = self.bot._parse_request(request=request)
+        user_request = self.bot._parse_request(request=request)
 
-        assert chat_id, 'console'
+        assert user_request.chat_id, 'console'
         assert user_request.message is None
         assert isinstance(user_request.signal, AddPhraseToStudySignal)
         assert user_request.data == 'data'
@@ -32,9 +32,9 @@ class TestCLIBot:
     def test_parse_request__unknown_signal(self):
         request = '/unknown_signal data'
 
-        user_request, chat_id = self.bot._parse_request(request=request)
+        user_request = self.bot._parse_request(request=request)
 
-        assert chat_id, 'console'
+        assert user_request.chat_id, 'console'
         assert user_request.message is None
         assert user_request.signal is None
         assert user_request.data == 'data'
@@ -42,9 +42,9 @@ class TestCLIBot:
     def test_parse_request__signal_without_data(self):
         request = '/add_phrase_to_study'
 
-        user_request, chat_id = self.bot._parse_request(request=request)
+        user_request = self.bot._parse_request(request=request)
 
-        assert chat_id, 'console'
+        assert user_request.chat_id, 'console'
         assert user_request.message is None
         assert isinstance(user_request.signal, AddPhraseToStudySignal)
         assert user_request.data == {}
