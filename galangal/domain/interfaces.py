@@ -31,6 +31,6 @@ class IPhraseDAO(ABC):
         self,
         chat_id: str,
         source_phrase: str,
-        target_phrase: str
+        target_phrase: str,
     ) -> None:
         pass
