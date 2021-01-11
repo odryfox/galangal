@@ -4,8 +4,8 @@ from infrastructure.bot import (
     AddPhraseToStudySignal,
     AddPhraseToStudySkill,
     PhraseSearchSkill,
+    SkillClassifier,
     UserRequest,
-    _create_skill_classifier,
     create_agent
 )
 from millet import Agent
@@ -18,7 +18,7 @@ class TestAgent:
         get_phrases_to_study_from_search_usecase = mock.Mock()
         save_phrase_to_study_usecase = mock.Mock()
 
-        skill_classifier = _create_skill_classifier(
+        skill_classifier = SkillClassifier(
             search_phrase_usages_in_different_languages_usecase=search_phrase_usages_in_different_languages_usecase,
             get_phrases_to_study_from_search_usecase=get_phrases_to_study_from_search_usecase,
             save_phrase_to_study_usecase=save_phrase_to_study_usecase,
@@ -31,7 +31,7 @@ class TestAgent:
             data={},
         )
 
-        skills = skill_classifier(user_request)
+        skills = skill_classifier.classify(user_request)
 
         assert len(skills), 1
 
@@ -45,7 +45,7 @@ class TestAgent:
         get_phrases_to_study_from_search_usecase = mock.Mock()
         save_phrase_to_study_usecase = mock.Mock()
 
-        skill_classifier = _create_skill_classifier(
+        skill_classifier = SkillClassifier(
             search_phrase_usages_in_different_languages_usecase=search_phrase_usages_in_different_languages_usecase,
             get_phrases_to_study_from_search_usecase=get_phrases_to_study_from_search_usecase,
             save_phrase_to_study_usecase=save_phrase_to_study_usecase,
@@ -58,7 +58,7 @@ class TestAgent:
             data={},
         )
 
-        skills = skill_classifier(user_request)
+        skills = skill_classifier.classify(user_request)
 
         assert len(skills), 1
 
@@ -66,10 +66,8 @@ class TestAgent:
         assert isinstance(skill, AddPhraseToStudySkill)
         assert skill._save_phrase_to_study_usecase == save_phrase_to_study_usecase
 
-    @mock.patch('infrastructure.bot._create_skill_classifier')
-    def test_create_agent(self, create_skill_classifier_mock):
-        skill_classifier = mock.Mock()
-        create_skill_classifier_mock.return_value = skill_classifier
+    @mock.patch('infrastructure.bot.SkillClassifier')
+    def test_create_agent(self, skill_classifier_mock):
         search_phrase_usages_in_different_languages_usecase = mock.Mock()
         get_phrases_to_study_from_search_usecase = mock.Mock()
         save_phrase_to_study_usecase = mock.Mock()
@@ -81,7 +79,7 @@ class TestAgent:
         )
 
         assert isinstance(agent, Agent)
-        create_skill_classifier_mock.assert_called_once_with(
+        skill_classifier_mock.assert_called_once_with(
             search_phrase_usages_in_different_languages_usecase=search_phrase_usages_in_different_languages_usecase,
             get_phrases_to_study_from_search_usecase=get_phrases_to_study_from_search_usecase,
             save_phrase_to_study_usecase=save_phrase_to_study_usecase,

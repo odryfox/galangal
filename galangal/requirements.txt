@@ -7,7 +7,7 @@ python-dotenv==0.15.0
 gunicorn==20.0.4
 pylint==2.6.0
 pytest-cov==2.10.1
-Millet==0.1.3
+Millet==0.2.0
 fire==0.3.1
 redis==3.5.3
 SQLAlchemy==1.3.22
