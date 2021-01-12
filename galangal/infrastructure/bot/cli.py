@@ -10,6 +10,8 @@ from infrastructure.bot.interfaces import (
 
 class CLIBot(IBot):
 
+    CHAT_ID = 'console'
+
     def _parse_request(self, request: str) -> UserRequest:
 
         if request[0] == '/':
@@ -32,7 +34,7 @@ class CLIBot(IBot):
             data = {}
 
         user_request = UserRequest(
-            chat_id='console',
+            chat_id=self.CHAT_ID,
             message=message,
             signal=signal,
             data=data,

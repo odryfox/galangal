@@ -14,7 +14,7 @@ class TestCLIBot:
 
         user_request = self.bot._parse_request(request=request)
 
-        assert user_request.chat_id, 'console'
+        assert user_request.chat_id, self.bot.CHAT_ID
         assert user_request.message == 'I will be back'
         assert user_request.signal is None
         assert user_request.data == {}
@@ -24,7 +24,7 @@ class TestCLIBot:
 
         user_request = self.bot._parse_request(request=request)
 
-        assert user_request.chat_id, 'console'
+        assert user_request.chat_id, self.bot.CHAT_ID
         assert user_request.message is None
         assert isinstance(user_request.signal, AddPhraseToStudySignal)
         assert user_request.data == 'data'
@@ -34,7 +34,7 @@ class TestCLIBot:
 
         user_request = self.bot._parse_request(request=request)
 
-        assert user_request.chat_id, 'console'
+        assert user_request.chat_id, self.bot.CHAT_ID
         assert user_request.message is None
         assert user_request.signal is None
         assert user_request.data == 'data'
@@ -44,7 +44,7 @@ class TestCLIBot:
 
         user_request = self.bot._parse_request(request=request)
 
-        assert user_request.chat_id, 'console'
+        assert user_request.chat_id, self.bot.CHAT_ID
         assert user_request.message is None
         assert isinstance(user_request.signal, AddPhraseToStudySignal)
         assert user_request.data == {}
@@ -52,7 +52,7 @@ class TestCLIBot:
     @mock.patch('builtins.print')
     def test_send_response(self, print_mock):
         response = 'response'
-        chat_id = 'console'
+        chat_id = self.bot.CHAT_ID
 
         self.bot._send_response(response=response, chat_id=chat_id)
 
