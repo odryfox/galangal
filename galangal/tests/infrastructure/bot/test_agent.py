@@ -13,6 +13,9 @@ from millet import Agent
 
 class TestAgent:
 
+    def setup_method(self):
+        self.chat_id = '100500'
+
     def test_skill_classifier__message(self):
         search_phrase_usages_in_different_languages_usecase = mock.Mock()
         get_phrases_to_study_from_search_usecase = mock.Mock()
@@ -25,7 +28,7 @@ class TestAgent:
         )
 
         user_request = UserRequest(
-            chat_id='100500',
+            chat_id=self.chat_id,
             message='I will be back',
             signal=None,
             data={},
@@ -52,7 +55,7 @@ class TestAgent:
         )
 
         user_request = UserRequest(
-            chat_id='100500',
+            chat_id=self.chat_id,
             message=None,
             signal=AddPhraseToStudySignal(),
             data={},

@@ -14,6 +14,7 @@ class TestPhraseSearchSkill:
             search_phrase_usages_in_different_languages_usecase=self.search_phrase_usages_in_different_languages_usecase_mock,
             get_phrases_to_study_from_search_usecase=self.get_phrases_to_study_from_search_usecase_mock,
         )
+        self.chat_id = '100500'
 
     @mock.patch.object(PhraseSearchSkill, 'say')
     def test(self, say_mock):
@@ -24,7 +25,7 @@ class TestPhraseSearchSkill:
         self.get_phrases_to_study_from_search_usecase_mock.execute.return_value = phrases_to_study
 
         user_request = UserRequest(
-            chat_id='100500',
+            chat_id=self.chat_id,
             message='I will be back',
             signal=None,
             data={},

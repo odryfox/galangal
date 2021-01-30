@@ -18,11 +18,12 @@ class TestAddPhraseToStudySkill:
         cls.skill = AddPhraseToStudySkill(
             save_phrase_to_study_usecase=cls.save_phrase_to_study_usecase_mock
         )
+        cls.chat_id = '100500'
 
     @mock.patch.object(AddPhraseToStudySkill, 'say')
     def test(self, say_mock):
         user_request = UserRequest(
-            chat_id='100500',
+            chat_id=self.chat_id,
             message=None,
             signal=AddPhraseToStudySignal(),
             data={
@@ -33,7 +34,7 @@ class TestAddPhraseToStudySkill:
         self.skill.start(initial_message=user_request)
 
         self.save_phrase_to_study_usecase_mock.execute.assert_called_once_with(
-            chat_id='100500',
+            chat_id=self.chat_id,
             source_phrase='source_phrase',
             target_phrase='target_phrase',
         )
