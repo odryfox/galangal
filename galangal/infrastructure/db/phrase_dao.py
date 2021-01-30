@@ -12,7 +12,6 @@ class DBPhraseDAO(IPhraseDAO):
 
     def __init__(self, session: Session):
         self._session = session
-        super().__init__()
 
     def save_phrase(
         self,
