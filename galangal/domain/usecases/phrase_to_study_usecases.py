@@ -6,6 +6,10 @@ from domain.entities import PhraseToStudy, PhraseUsagesInDifferentLanguages
 class GetPhraseToStudyFromSearchUsecase:
 
     def execute(self, phrase_usages_in_different_languages: PhraseUsagesInDifferentLanguages) -> List[PhraseToStudy]:
+
+        if not phrase_usages_in_different_languages:
+            return []
+
         languages = list(phrase_usages_in_different_languages[0].keys())
 
         source_language = languages[0]

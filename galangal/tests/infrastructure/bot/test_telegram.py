@@ -154,7 +154,7 @@ class TestTelegramBot:
 
         callback_data = {
             'signal': AddPhraseToStudySignal.key,
-            'data': {
+            'phrase_to_study': {
                 'source_phrase': 'source_phrase',
                 'target_phrase': 'target_phrase',
             }
@@ -195,7 +195,7 @@ class TestTelegramBot:
         assert user_request.chat_id == self.chat_id
         assert user_request.message == 'I will be back'
         assert user_request.signal is None
-        assert user_request.data == {}
+        assert user_request.phrase_to_study is None
 
     def test_parse_request__with_signal(self):
         request = {
@@ -207,7 +207,7 @@ class TestTelegramBot:
 
         self.callback_data_dao.load_data.return_value = {
             'signal': AddPhraseToStudySignal.key,
-            'data': {'1': 1},
+            'phrase_to_study': {'source_phrase': 'data', 'target_phrase': 'hata'},
         }
 
         user_request = self.bot._parse_request(request)
@@ -217,7 +217,8 @@ class TestTelegramBot:
         assert user_request.chat_id == self.chat_id
         assert user_request.message is None
         assert isinstance(user_request.signal, AddPhraseToStudySignal)
-        assert user_request.data == {'1': 1}
+        assert user_request.phrase_to_study.source_phrase == 'data'
+        assert user_request.phrase_to_study.target_phrase == 'hata'
 
     @mock.patch.object(TelegramBot, '_send_message')
     @mock.patch.object(TelegramBot, '_send_phrase_usages_in_different_languages')

@@ -13,10 +13,10 @@ class AddPhraseToStudySkill(Skill):
     def start(self, initial_message: UserRequest):
         self._save_phrase_to_study_usecase.execute(
             chat_id=initial_message.chat_id,
-            source_phrase=initial_message.data['source_phrase'],
-            target_phrase=initial_message.data['target_phrase'],
+            source_phrase=initial_message.phrase_to_study.source_phrase,
+            target_phrase=initial_message.phrase_to_study.target_phrase,
         )
         self.say('Связка {} - {} добавлено на изучение'.format(
-            initial_message.data['source_phrase'],
-            initial_message.data['target_phrase'],
+            initial_message.phrase_to_study.source_phrase,
+            initial_message.phrase_to_study.target_phrase,
         ))

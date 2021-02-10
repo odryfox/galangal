@@ -31,7 +31,7 @@ class TestAgent:
             chat_id=self.chat_id,
             message='I will be back',
             signal=None,
-            data={},
+            phrase_to_study=None,
         )
 
         skills = skill_classifier.classify(user_request)
@@ -58,7 +58,7 @@ class TestAgent:
             chat_id=self.chat_id,
             message=None,
             signal=AddPhraseToStudySignal(),
-            data={},
+            phrase_to_study=None,
         )
 
         skills = skill_classifier.classify(user_request)

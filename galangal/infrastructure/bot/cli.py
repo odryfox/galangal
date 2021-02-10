@@ -1,5 +1,6 @@
 from typing import Union
 
+from domain.entities import PhraseToStudy
 from infrastructure.bot.interfaces import (
     AddPhraseToStudySignal,
     IBot,
@@ -16,28 +17,28 @@ class CLIBot(IBot):
 
         if request[0] == '/':
             parts = request.split()
-            message = None
 
-            signal = parts[0][1:]
-            if signal == 'add_phrase_to_study':
+            if len(parts) > 2 and parts[0][1:] == AddPhraseToStudySignal.key:
+                message = None
                 signal = AddPhraseToStudySignal()
+                phrase_to_study = PhraseToStudy(
+                    source_phrase=parts[1],
+                    target_phrase=parts[2],
+                )
             else:
+                message = request
                 signal = None
-
-            if len(parts) > 1:
-                data = parts[1]
-            else:
-                data = {}
+                phrase_to_study = None
         else:
             message = request
             signal = None
-            data = {}
+            phrase_to_study = None
 
         user_request = UserRequest(
             chat_id=self.CHAT_ID,
             message=message,
             signal=signal,
-            data=data,
+            phrase_to_study=phrase_to_study,
         )
 
         return user_request

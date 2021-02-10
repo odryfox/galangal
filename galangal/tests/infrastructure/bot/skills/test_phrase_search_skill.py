@@ -28,7 +28,7 @@ class TestPhraseSearchSkill:
             chat_id=self.chat_id,
             message='I will be back',
             signal=None,
-            data={},
+            phrase_to_study=None,
         )
         self.skill.start(initial_message=user_request)
 

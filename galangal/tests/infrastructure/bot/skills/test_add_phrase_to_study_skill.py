@@ -1,5 +1,6 @@
 from unittest import mock
 
+from domain.entities import PhraseToStudy
 from domain.usecases.save_phrase_to_study import SavePhraseToStudyUsecase
 from infrastructure.bot import (
     AddPhraseToStudySignal,
@@ -26,10 +27,10 @@ class TestAddPhraseToStudySkill:
             chat_id=self.chat_id,
             message=None,
             signal=AddPhraseToStudySignal(),
-            data={
-                'source_phrase': 'source_phrase',
-                'target_phrase': 'target_phrase',
-            },
+            phrase_to_study=PhraseToStudy(
+                source_phrase='source_phrase',
+                target_phrase='target_phrase',
+            ),
         )
         self.skill.start(initial_message=user_request)
 

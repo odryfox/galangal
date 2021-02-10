@@ -24,7 +24,7 @@ class UserRequest:
     chat_id: str
     message: Optional[str]
     signal: Optional[UserSignal]
-    data: dict
+    phrase_to_study: Optional[PhraseToStudy]
 
 
 @dataclass
