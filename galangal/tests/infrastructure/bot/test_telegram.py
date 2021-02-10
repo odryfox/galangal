@@ -18,7 +18,7 @@ class TestTelegramBot:
             agent=mock.Mock(),
             callback_data_dao=self.callback_data_dao,
         )
-        self.chat_id = '100500'
+        self.chat_id = 100500
 
     @mock.patch('infrastructure.bot.telegram.Updater')
     def test_register_webhook(self, updater_mock):
@@ -192,7 +192,7 @@ class TestTelegramBot:
 
         user_request = self.bot._parse_request(request)
 
-        assert user_request.chat_id == self.chat_id
+        assert user_request.chat_id == str(self.chat_id)
         assert user_request.message == 'I will be back'
         assert user_request.signal is None
         assert user_request.phrase_to_study is None
@@ -214,7 +214,7 @@ class TestTelegramBot:
 
         self.callback_data_dao.load_data.assert_called_once_with(key='key')
 
-        assert user_request.chat_id == self.chat_id
+        assert user_request.chat_id == str(self.chat_id)
         assert user_request.message is None
         assert isinstance(user_request.signal, AddPhraseToStudySignal)
         assert user_request.phrase_to_study.source_phrase == 'data'
@@ -225,10 +225,10 @@ class TestTelegramBot:
     def test_send_response__str_response(self, send_phrase_usages_in_different_languages_mock, send_message_mock):
         response = 'response'
 
-        self.bot._send_response(response=response, chat_id=self.chat_id)
+        self.bot._send_response(response=response, chat_id=str(self.chat_id))
 
         send_message_mock.assert_called_once_with(
-            message=response, chat_id=self.chat_id
+            message=response, chat_id=str(self.chat_id)
         )
         send_phrase_usages_in_different_languages_mock.assert_not_called()
 
@@ -240,13 +240,13 @@ class TestTelegramBot:
             phrases_to_study=mock.Mock(),
         )
 
-        self.bot._send_response(response=response, chat_id=self.chat_id)
+        self.bot._send_response(response=response, chat_id=str(self.chat_id))
 
         send_message_mock.assert_not_called()
         send_phrase_usages_in_different_languages_mock.assert_called_once_with(
             phrase_usages_in_different_languages=response.phrase_usages_in_different_languages,
             phrases_to_study=response.phrases_to_study,
-            chat_id=self.chat_id,
+            chat_id=str(self.chat_id),
         )
 
     @mock.patch.object(TelegramBot, '_send_message')
@@ -254,7 +254,7 @@ class TestTelegramBot:
     def test_send_response__unknown_type_of_response(self, send_phrase_usages_in_different_languages_mock, send_message_mock):
         response = 100500
 
-        self.bot._send_response(response=response, chat_id=self.chat_id)
+        self.bot._send_response(response=response, chat_id=str(self.chat_id))
 
         send_message_mock.assert_not_called()
         send_phrase_usages_in_different_languages_mock.assert_not_called()
