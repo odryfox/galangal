@@ -1,1 +1,1 @@
-web: gunicorn manage_web:app --pythonpath=galangal
+web: cd galangal && gunicorn manage_web:app
