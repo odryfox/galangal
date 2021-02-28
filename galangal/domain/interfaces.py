@@ -22,3 +22,15 @@ class ILanguageService(ABC):
     @abstractmethod
     def get_language(self, text: str) -> Language:
         pass
+
+
+class IPhraseDAO(ABC):
+
+    @abstractmethod
+    def save_phrase(
+        self,
+        chat_id: str,
+        source_phrase: str,
+        target_phrase: str,
+    ) -> None:
+        pass

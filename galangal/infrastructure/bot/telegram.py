@@ -1,4 +1,4 @@
-from typing import List, Tuple, Union
+from typing import List, Union
 
 from domain.constants import Language
 from domain.entities import PhraseToStudy
@@ -33,30 +33,34 @@ class TelegramBot(IBot):
         updater.bot.delete_webhook()
         updater.bot.set_webhook(url=url)
 
-    def _parse_request(self, request: dict) -> Tuple[UserRequest, str]:
+    def _parse_request(self, request: dict) -> UserRequest:
         try:
             chat_id = request['message']['chat']['id']
             message = request['message']['text']
             signal = None
-            data = {}
+            phrase_to_study = None
         except KeyError:
             chat_id = request['callback_query']['from']['id']
             message = None
             signal = None
-            data = {}
+            phrase_to_study = None
             callback_key = request['callback_query']['data']
             callback_data = self._callback_data_dao.load_data(key=callback_key)
             if callback_data and callback_data['signal'] == AddPhraseToStudySignal.key:
                 signal = AddPhraseToStudySignal()
-                data = callback_data['data']
+                phrase_to_study = PhraseToStudy(
+                    source_phrase=callback_data['phrase_to_study']['source_phrase'],
+                    target_phrase=callback_data['phrase_to_study']['target_phrase'],
+                )
 
         user_request = UserRequest(
+            chat_id=str(chat_id),
             message=message,
             signal=signal,
-            data=data,
+            phrase_to_study=phrase_to_study,
         )
 
-        return user_request, chat_id
+        return user_request
 
     def _send_response(self, response: Union[str, UserResponse], chat_id: str):
         if isinstance(response, str):
@@ -128,7 +132,7 @@ class TelegramBot(IBot):
 
             callback_data = {
                 'signal': AddPhraseToStudySignal.key,
-                'data': {
+                'phrase_to_study': {
                     'source_phrase': phrase_to_study.source_phrase,
                     'target_phrase': phrase_to_study.target_phrase,
                 }

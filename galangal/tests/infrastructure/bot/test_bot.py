@@ -1,4 +1,4 @@
-from typing import Any, Tuple, Union
+from typing import Any, Union
 from unittest import mock
 
 from infrastructure.bot.interfaces import IBot, UserRequest, UserResponse
@@ -6,7 +6,7 @@ from infrastructure.bot.interfaces import IBot, UserRequest, UserResponse
 
 class Bot(IBot):
 
-    def _parse_request(self, request: Any) -> Tuple[UserRequest, str]:
+    def _parse_request(self, request: Any) -> UserRequest:
         pass
 
     def _send_response(self, response: Union[str, UserResponse], chat_id: str) -> None:
@@ -39,10 +39,10 @@ class TestBot:
     @mock.patch.object(Bot, '_send_responses')
     def test_execute(self, send_responses_mock, parse_request_mock):
         request = mock.Mock()
-        user_request = mock.Mock()
         chat_id = mock.Mock()
+        user_request = mock.Mock(chat_id=chat_id)
 
-        parse_request_mock.return_value = tuple([user_request, chat_id])
+        parse_request_mock.return_value = user_request
 
         responses = mock.Mock()
         self.agent_mock.query.return_value = responses
@@ -51,8 +51,8 @@ class TestBot:
 
         parse_request_mock.assert_called_once_with(request)
         self.agent_mock.query.assert_called_once_with(
-            message=user_request, user_id=chat_id
+            message=user_request, user_id=user_request.chat_id
         )
         send_responses_mock.assert_called_once_with(
-            responses=responses, chat_id=chat_id
+            responses=responses, chat_id=user_request.chat_id
         )

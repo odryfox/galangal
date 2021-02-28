@@ -1,0 +1,3 @@
+Для генерации миграций используй следующую команду:
+
+# infrastructure/db/alembic/makemigration.sh -m "Add users"

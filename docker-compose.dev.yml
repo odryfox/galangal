@@ -8,29 +8,52 @@ services:
     volumes:
       - ./galangal:/code
     restart: always
-    command: bash -c "python manage_web.py"
+    command: bash -c "/usr/wait-for-it.sh --timeout=0 postgres:5432 && /usr/wait-for-it.sh --timeout=0 postgres_test:5432 && python manage_web.py"
     env_file:
       - .env
     environment:
-      REDIS_URL: "redis://:yourpassword@redis:6379/0"
-      TEST_REDIS_URL: "redis://:yourpassword@redis_test:6379/0"
+      REDIS_URL: "redis://:pass@redis:6379/0"
+      TEST_REDIS_URL: "redis://:pass@redis_test:6379/0"
+      DATABASE_URL: "postgresql://postgres:pass@postgres:5432/galangal"
+      TEST_DATABASE_URL: "postgresql://postgres:pass@postgres_test:5432/galangal"
     depends_on:
       - redis
       - redis_test
+      - postgres
+      - postgres_test
 
   redis:
     image: "redis:alpine"
     volumes:
       - ./data/redis:/data
-    command: redis-server --requirepass yourpassword --appendonly yes
+    command: redis-server --requirepass pass --appendonly yes
     ports:
       - "6379:6379"
 
   redis_test:
     image: "redis:alpine"
-    command: redis-server --requirepass yourpassword --save
+    command: redis-server --requirepass pass --save
     ports:
       - "6380:6379"
 
-volumes:
-  data:
+  postgres:
+    image: postgres
+    restart: always
+    ports:
+      - "15432:5432"
+    volumes:
+      - ./tmp/data/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: galangal
+
+  postgres_test:
+    image: postgres
+    restart: always
+    ports:
+      - "15433:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: galangal

@@ -8,8 +8,8 @@ from redis import Redis
 
 class RedisCallbackDataDAO(ICallbackDataDAO):
 
-    def __init__(self, redis_url: str):
-        self._redis = Redis.from_url(url=redis_url)
+    def __init__(self, redis: Redis):
+        self._redis = redis
 
     def _generate_key(self) -> str:
         return str(uuid.uuid4())
