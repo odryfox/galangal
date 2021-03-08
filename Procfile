@@ -1,1 +1,1 @@
-web: cd galangal && gunicorn manage_web:app
+web: cd galangal && python migrate.py && gunicorn manage_web:app
