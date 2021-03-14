@@ -13,22 +13,28 @@ class PhraseORM(Base):
     id = Column(Integer, primary_key=True)
     value = Column(String, nullable=False, unique=True)
 
-    source_links = relationship('PhraseLinkORM', back_populates='source_phrase', foreign_keys='[PhraseLinkORM.source_phrase_id]')
-    target_links = relationship('PhraseLinkORM', back_populates='target_phrase', foreign_keys='[PhraseLinkORM.target_phrase_id]')
+    source_synonyms = relationship(
+        'SynonymORM', back_populates='source_phrase',
+        foreign_keys='[SynonymORM.source_phrase_id]',
+    )
+    target_synonyms = relationship(
+        'SynonymORM', back_populates='target_phrase',
+        foreign_keys='[SynonymORM.target_phrase_id]',
+    )
 
 
-class PhraseLinkORM(Base):
-    __tablename__ = 'phrase_links'
+class SynonymORM(Base):
+    __tablename__ = 'synonyms'
 
     id = Column(Integer, primary_key=True)
 
     source_phrase_id = Column(Integer, ForeignKey('phrases.id'))
-    source_phrase = relationship('PhraseORM', back_populates='source_links', foreign_keys=[source_phrase_id])
+    source_phrase = relationship('PhraseORM', back_populates='source_synonyms', foreign_keys=[source_phrase_id])
 
     target_phrase_id = Column(Integer, ForeignKey('phrases.id'))
-    target_phrase = relationship('PhraseORM', back_populates='target_links', foreign_keys=[target_phrase_id])
+    target_phrase = relationship('PhraseORM', back_populates='target_synonyms', foreign_keys=[target_phrase_id])
 
-    study_phrases = relationship('StudyPhraseORM', back_populates='link')
+    study_synonyms = relationship('StudySynonymORM', back_populates='synonym')
 
     __table_args__ = (
         UniqueConstraint(
@@ -45,24 +51,24 @@ class AccountORM(Base):
     id = Column(Integer, primary_key=True)
     telegram_chat_id = Column(String, nullable=False, unique=True)
 
-    study_phrases = relationship('StudyPhraseORM', back_populates='account')
+    study_synonyms = relationship('StudySynonymORM', back_populates='account')
 
 
-class StudyPhraseORM(Base):
-    __tablename__ = 'study_phrases'
+class StudySynonymORM(Base):
+    __tablename__ = 'study_synonyms'
 
     id = Column(Integer, primary_key=True)
 
     account_id = Column(Integer, ForeignKey('accounts.id'))
-    account = relationship('AccountORM', back_populates='study_phrases')
+    account = relationship('AccountORM', back_populates='study_synonyms')
 
-    link_id = Column(Integer, ForeignKey('phrase_links.id'))
-    link = relationship('PhraseLinkORM', back_populates='study_phrases')
+    synonym_id = Column(Integer, ForeignKey('synonyms.id'))
+    synonym = relationship('SynonymORM', back_populates='study_synonyms')
 
     __table_args__ = (
         UniqueConstraint(
             'account_id',
-            'link_id',
-            name='account_link_unique',
+            'synonym_id',
+            name='account_synonym_unique',
         ),
     )

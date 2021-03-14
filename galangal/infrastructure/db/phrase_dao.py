@@ -1,9 +1,9 @@
 from domain.interfaces import IPhraseDAO
 from infrastructure.db.models import (
     AccountORM,
-    PhraseLinkORM,
     PhraseORM,
-    StudyPhraseORM
+    StudySynonymORM,
+    SynonymORM
 )
 from sqlalchemy.orm import Session
 
@@ -38,17 +38,17 @@ class DBPhraseDAO(IPhraseDAO):
             self._session.add(target_phrase_orm)
             self._session.commit()
 
-        link_orm = self._session.query(PhraseLinkORM).filter_by(
+        synonym_orm = self._session.query(SynonymORM).filter_by(
             source_phrase_id=source_phrase_orm.id,
             target_phrase_id=target_phrase_orm.id,
         ).first()
 
-        if not link_orm:
-            link_orm = PhraseLinkORM(
+        if not synonym_orm:
+            synonym_orm = SynonymORM(
                 source_phrase_id=source_phrase_orm.id,
                 target_phrase_id=target_phrase_orm.id,
             )
-            self._session.add(link_orm)
+            self._session.add(synonym_orm)
             self._session.commit()
 
         account_orm = self._session.query(AccountORM).filter_by(
@@ -59,12 +59,12 @@ class DBPhraseDAO(IPhraseDAO):
             self._session.add(account_orm)
             self._session.commit()
 
-        study_phrase_orm = self._session.query(StudyPhraseORM).filter_by(
-            account_id=account_orm.id, link_id=link_orm.id
+        study_synonym_orm = self._session.query(StudySynonymORM).filter_by(
+            account_id=account_orm.id, synonym_id=synonym_orm.id
         ).first()
-        if not study_phrase_orm:
-            study_phrase_orm = StudyPhraseORM(
-                account_id=account_orm.id, link_id=link_orm.id
+        if not study_synonym_orm:
+            study_phrase_orm = StudySynonymORM(
+                account_id=account_orm.id, synonym_id=synonym_orm.id
             )
             self._session.add(study_phrase_orm)
             self._session.commit()
