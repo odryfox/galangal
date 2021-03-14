@@ -1,39 +1,49 @@
-from typing import List, Union
+from typing import List
 
 from domain.constants import Language
-from domain.entities import PhraseToStudy
-from domain.interfaces import PhraseUsagesInDifferentLanguages
-from infrastructure.bot.interfaces import (
+from domain.entities import (
     AddPhraseToStudySignal,
-    IBot,
-    ICallbackDataDAO,
+    PhraseToStudy,
+    PhraseUsagesInDifferentLanguages,
     SearchPhrasesResponse,
     UserRequest,
     UserResponse
 )
+from domain.interfaces import ICallbackDataDAO
 from millet import Agent
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Updater
 
 
-class TelegramBot(IBot):
+class TelegramBot:
 
     def __init__(
         self,
         token: str,
         agent: Agent,
         callback_data_dao: ICallbackDataDAO,
-    ):
-        self._token = token
-        self._callback_data_dao = callback_data_dao
-        super().__init__(agent)
+    ) -> None:
+        self.token = token
+        self.callback_data_dao = callback_data_dao
+        self.agent = agent
+
+        updater = Updater(token=self.token)
+        self.bot = updater.bot
 
     def register_webhook(self, url: str) -> None:
-        updater = Updater(token=self._token)
-        updater.bot.delete_webhook()
-        updater.bot.set_webhook(url=url)
+        self.bot.delete_webhook()
+        self.bot.set_webhook(url=url)
 
-    def _parse_request(self, request: dict) -> UserRequest:
+    def process_request(self, request):
+        user_request = self._parse_user_request(request)
+        user_responses = self.agent.query(
+            message=user_request,
+            user_id=user_request.chat_id,
+        )
+        for user_response in user_responses:
+            self._send_user_response(user_response, user_request.chat_id)
+
+    def _parse_user_request(self, request) -> UserRequest:
         try:
             chat_id = request['message']['chat']['id']
             message = request['message']['text']
@@ -45,7 +55,7 @@ class TelegramBot(IBot):
             signal = None
             phrase_to_study = None
             callback_key = request['callback_query']['data']
-            callback_data = self._callback_data_dao.load_data(key=callback_key)
+            callback_data = self.callback_data_dao.load_data(key=callback_key)
             if callback_data and callback_data['signal'] == AddPhraseToStudySignal.key:
                 signal = AddPhraseToStudySignal()
                 phrase_to_study = PhraseToStudy(
@@ -62,19 +72,18 @@ class TelegramBot(IBot):
 
         return user_request
 
-    def _send_response(self, response: Union[str, UserResponse], chat_id: str):
-        if isinstance(response, str):
-            self._send_message(message=response, chat_id=chat_id)
-        elif isinstance(response, SearchPhrasesResponse):
+    def _send_user_response(self, user_response: UserResponse, chat_id: str):
+        if isinstance(user_response, str):
+            self._send_message(message=user_response, chat_id=chat_id)
+        elif isinstance(user_response, SearchPhrasesResponse):
             self._send_phrase_usages_in_different_languages(
-                phrase_usages_in_different_languages=response.phrase_usages_in_different_languages,
-                phrases_to_study=response.phrases_to_study,
+                phrase_usages_in_different_languages=user_response.phrase_usages_in_different_languages,
+                phrases_to_study=user_response.phrases_to_study,
                 chat_id=chat_id,
             )
 
     def _send_message(self, message: str, chat_id: str) -> None:
-        updater = Updater(token=self._token)
-        updater.bot.send_message(
+        self.bot.send_message(
             chat_id=chat_id,
             text=message,
             parse_mode='Markdown',
@@ -94,8 +103,7 @@ class TelegramBot(IBot):
         keyboard = self._build_keyboard(
             phrases_to_study=phrases_to_study,
         )
-        updater = Updater(token=self._token)
-        updater.bot.send_message(
+        self.bot.send_message(
             chat_id=chat_id,
             text=response,
             parse_mode='Markdown',
@@ -128,7 +136,8 @@ class TelegramBot(IBot):
 
         buttons = []
         for phrase_to_study in phrases_to_study:
-            text = '{} - {}'.format(phrase_to_study.source_phrase, phrase_to_study.target_phrase)
+            text = '{} - {}'.format(phrase_to_study.source_phrase,
+                                    phrase_to_study.target_phrase)
 
             callback_data = {
                 'signal': AddPhraseToStudySignal.key,
@@ -138,9 +147,12 @@ class TelegramBot(IBot):
                 }
             }
 
-            callback_key = self._callback_data_dao.save_data(data=callback_data)
+            callback_key = self.callback_data_dao.save_data(data=callback_data)
 
-            button = InlineKeyboardButton(text='➕ {}'.format(text), callback_data=callback_key)
+            button = InlineKeyboardButton(
+                text='➕ {}'.format(text),
+                callback_data=callback_key,
+            )
             buttons.append(button)
 
         keyboard = InlineKeyboardMarkup([[button] for button in buttons])

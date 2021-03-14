@@ -1,20 +1,31 @@
 from typing import Union
 
-from domain.entities import PhraseToStudy
-from infrastructure.bot.interfaces import (
+from domain.entities import (
     AddPhraseToStudySignal,
-    IBot,
+    PhraseToStudy,
     UserRequest,
     UserResponse
 )
+from millet import Agent
 
 
-class CLIBot(IBot):
+class CLIBot:
 
     CHAT_ID = 'console'
 
-    def _parse_request(self, request: str) -> UserRequest:
+    def __init__(self, agent: Agent):
+        self.agent = agent
 
+    def process_request(self, request: str) -> None:
+        user_request = self._parse_request(request)
+        user_responses = self.agent.query(
+            message=user_request,
+            user_id=user_request.chat_id,
+        )
+        for user_response in user_responses:
+            self._send_user_response(user_response)
+
+    def _parse_request(self, request) -> UserRequest:
         if request[0] == '/':
             parts = request.split()
 
@@ -43,5 +54,5 @@ class CLIBot(IBot):
 
         return user_request
 
-    def _send_response(self, response: Union[str, UserResponse], chat_id: str):
-        print(response)
+    def _send_user_response(self, user_response: Union[str, UserResponse]):
+        print(user_response)

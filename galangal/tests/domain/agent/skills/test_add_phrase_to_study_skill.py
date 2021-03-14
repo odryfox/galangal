@@ -1,12 +1,8 @@
 from unittest import mock
 
-from domain.entities import PhraseToStudy
+from domain.agent.skills.add_phrase_to_study_skill import AddPhraseToStudySkill
+from domain.entities import AddPhraseToStudySignal, PhraseToStudy, UserRequest
 from domain.usecases.save_phrase_to_study import SavePhraseToStudyUsecase
-from infrastructure.bot import (
-    AddPhraseToStudySignal,
-    AddPhraseToStudySkill,
-    UserRequest
-)
 
 
 class TestAddPhraseToStudySkill:
