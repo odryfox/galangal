@@ -17,4 +17,7 @@ class PhraseSearchSkill(Skill):
             message=initial_message.message
         )
 
-        self.say(search_phrases_response)
+        if not search_phrases_response.phrase_usages_in_different_languages:
+            self.say('Фраз не найдено')
+        else:
+            self.say(search_phrases_response)
