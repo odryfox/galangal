@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Optional
 
 from domain.constants import Language
 from domain.entities import PhraseUsagesInDifferentLanguages
@@ -33,4 +33,15 @@ class IPhraseDAO(ABC):
         source_phrase: str,
         target_phrase: str,
     ) -> None:
+        pass
+
+
+class ICallbackDataDAO(ABC):
+
+    @abstractmethod
+    def save_data(self, data: dict) -> str:
+        pass
+
+    @abstractmethod
+    def load_data(self, key: str) -> Optional[dict]:
         pass

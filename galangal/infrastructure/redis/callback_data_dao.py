@@ -2,7 +2,7 @@ import json
 import uuid
 from typing import Optional
 
-from infrastructure.bot.interfaces import ICallbackDataDAO
+from domain.interfaces import ICallbackDataDAO
 from redis import Redis
 
 

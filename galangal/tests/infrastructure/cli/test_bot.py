@@ -1,7 +1,7 @@
 from unittest import mock
 
-from infrastructure.bot import AddPhraseToStudySignal
-from infrastructure.bot.cli import CLIBot
+from domain.entities import AddPhraseToStudySignal
+from infrastructure.cli.bot import CLIBot
 
 
 class TestCLIBot:
@@ -53,8 +53,7 @@ class TestCLIBot:
     @mock.patch('builtins.print')
     def test_send_response(self, print_mock):
         response = 'response'
-        chat_id = self.bot.CHAT_ID
 
-        self.bot._send_response(response=response, chat_id=chat_id)
+        self.bot._send_user_response(user_response=response)
 
         print_mock.assert_called_once_with(response)
