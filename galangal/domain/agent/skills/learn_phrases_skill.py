@@ -8,7 +8,7 @@ class LearnPhrasesSkill(Skill):
     def __init__(self, phrase_dao: IPhraseDAO):
         super().__init__()
         self._phrase_dao = phrase_dao
-        self.count = 3
+        self.count = 1
 
     def start(self, initial_message: UserRequest):
         phrase = self._phrase_dao.get_phrase(initial_message.chat_id)
@@ -16,16 +16,16 @@ class LearnPhrasesSkill(Skill):
             self.say('Нет слов для изучения')
             return
         self._phrase = phrase
-        self.ask(question=phrase.source_phrase, direct_to=self.check)
+        self.ask(question=f'{self.count}. {phrase.source_phrase}', direct_to=self.check)
 
     def check(self, answer: UserRequest):
         if answer.message == self._phrase.target_phrase:
-            self.say('Молодчик')
+            self.say(f'{self.count}. Молодчик')
         else:
-            self.say('Ошибка. Правильный ответ: {}'.format(self._phrase.target_phrase))
+            self.say(f'{self.count}. Ошибка. Правильный ответ: {self._phrase.target_phrase}')
 
-        self.count -= 1
-        if self.count != 0:
+        self.count += 1
+        if self.count <= 3:
             self.start(answer)
         else:
-            self.say('Тренировка завершена')
+            self.finish('Тренировка завершена')
