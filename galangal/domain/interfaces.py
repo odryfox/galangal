@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 
 from domain.constants import Language
-from domain.entities import PhraseUsagesInDifferentLanguages
+from domain.entities import PhraseToStudy, PhraseUsagesInDifferentLanguages
 
 
 class IPhraseUsagesInDifferentLanguagesService(ABC):
@@ -33,6 +33,10 @@ class IPhraseDAO(ABC):
         source_phrase: str,
         target_phrase: str,
     ) -> None:
+        pass
+
+    @abstractmethod
+    def get_phrase(self, chat_id: str) -> Optional[PhraseToStudy]:
         pass
 
 

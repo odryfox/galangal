@@ -34,6 +34,7 @@ class App:
         agent = create_agent(
             search_phrase_usages_in_different_languages_usecase=search_phrase_usages_in_different_languages_usecase,
             save_phrase_to_study_usecase=save_phrase_to_study_usecase,
+            phrase_dao=phrase_dao,
         )
 
         self.cli_bot = CLIBot(agent=agent)

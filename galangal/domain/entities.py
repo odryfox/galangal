@@ -33,6 +33,14 @@ class AddPhraseToStudySignal(UserSignal):
     key = 'AddPhraseToStudySignal'
 
 
+class GreetingSignal(UserSignal):
+    key = 'GreetingSignal'
+
+
+class LearnPhrasesSignal(UserSignal):
+    key = 'LearnPhrasesSignal'
+
+
 @dataclass
 class UserRequest:
     chat_id: str
@@ -50,3 +58,8 @@ class UserResponse(ABC):
 class SearchPhrasesResponse(UserResponse):
     phrase_usages_in_different_languages: PhraseUsagesInDifferentLanguages
     phrases_to_study: List[PhraseToStudy]
+
+
+@dataclass
+class GreetingResponse(UserResponse):
+    text: str

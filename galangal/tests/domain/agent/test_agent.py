@@ -15,10 +15,12 @@ class TestAgent:
     def test_skill_classifier__message(self):
         search_phrase_usages_in_different_languages_usecase = mock.Mock()
         save_phrase_to_study_usecase = mock.Mock()
+        phrase_dao = mock.Mock()
 
         skill_classifier = SkillClassifier(
             search_phrase_usages_in_different_languages_usecase=search_phrase_usages_in_different_languages_usecase,
             save_phrase_to_study_usecase=save_phrase_to_study_usecase,
+            phrase_dao=phrase_dao,
         )
 
         user_request = UserRequest(
@@ -39,10 +41,12 @@ class TestAgent:
     def test_skill_classifier__signal(self):
         search_phrase_usages_in_different_languages_usecase = mock.Mock()
         save_phrase_to_study_usecase = mock.Mock()
+        phrase_dao = mock.Mock()
 
         skill_classifier = SkillClassifier(
             search_phrase_usages_in_different_languages_usecase=search_phrase_usages_in_different_languages_usecase,
             save_phrase_to_study_usecase=save_phrase_to_study_usecase,
+            phrase_dao=phrase_dao,
         )
 
         user_request = UserRequest(
@@ -64,14 +68,17 @@ class TestAgent:
     def test_create_agent(self, skill_classifier_mock):
         search_phrase_usages_in_different_languages_usecase = mock.Mock()
         save_phrase_to_study_usecase = mock.Mock()
+        phrase_dao = mock.Mock()
 
         agent = create_agent(
             search_phrase_usages_in_different_languages_usecase=search_phrase_usages_in_different_languages_usecase,
             save_phrase_to_study_usecase=save_phrase_to_study_usecase,
+            phrase_dao=phrase_dao
         )
 
         assert isinstance(agent, Agent)
         skill_classifier_mock.assert_called_once_with(
             search_phrase_usages_in_different_languages_usecase=search_phrase_usages_in_different_languages_usecase,
             save_phrase_to_study_usecase=save_phrase_to_study_usecase,
+            phrase_dao=phrase_dao,
         )
