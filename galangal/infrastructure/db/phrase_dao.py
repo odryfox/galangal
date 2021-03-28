@@ -1,3 +1,7 @@
+import random
+from typing import Optional
+
+from domain.entities import PhraseToStudy
 from domain.interfaces import IPhraseDAO
 from infrastructure.db.models import (
     AccountORM,
@@ -68,3 +72,21 @@ class DBPhraseDAO(IPhraseDAO):
             )
             self._session.add(study_phrase_orm)
             self._session.commit()
+
+    def get_phrase(self, chat_id: str) -> Optional[PhraseToStudy]:
+        try:
+            account_orm = self._session.query(AccountORM).filter_by(
+                telegram_chat_id=str(chat_id)
+            ).first()
+
+            query = self._session.query(StudySynonymORM).filter_by(account_id=account_orm.id)
+            random_index = random.randrange(0, query.count())
+            study_synonym_orm = query[random_index]
+
+            synonym_orm = self._session.query(SynonymORM).get(study_synonym_orm.synonym_id)
+        except:
+            return None
+        return PhraseToStudy(
+            source_phrase=synonym_orm.source_phrase.value,
+            target_phrase=synonym_orm.target_phrase.value,
+        )

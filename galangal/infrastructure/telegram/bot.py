@@ -1,8 +1,11 @@
-from typing import List
+from typing import List, Optional
 
 from domain.constants import Language
 from domain.entities import (
     AddPhraseToStudySignal,
+    GreetingResponse,
+    GreetingSignal,
+    LearnPhrasesSignal,
     PhraseToStudy,
     PhraseUsagesInDifferentLanguages,
     SearchPhrasesResponse,
@@ -11,7 +14,12 @@ from domain.entities import (
 )
 from domain.interfaces import ICallbackDataDAO
 from millet import Agent
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    KeyboardButton,
+    ReplyKeyboardMarkup
+)
 from telegram.ext import Updater
 
 
@@ -36,6 +44,9 @@ class TelegramBot:
 
     def process_request(self, request):
         user_request = self._parse_user_request(request)
+        if not user_request:
+            return
+
         user_responses = self.agent.query(
             message=user_request,
             user_id=user_request.chat_id,
@@ -43,25 +54,34 @@ class TelegramBot:
         for user_response in user_responses:
             self._send_user_response(user_response, user_request.chat_id)
 
-    def _parse_user_request(self, request) -> UserRequest:
+    def _parse_user_request(self, request) -> Optional[UserRequest]:
         try:
             chat_id = request['message']['chat']['id']
             message = request['message']['text']
             signal = None
+            if message == '/start':
+                message = None
+                signal = GreetingSignal()
+            elif message == 'Изучение слов':
+                message = None
+                signal = LearnPhrasesSignal()
             phrase_to_study = None
         except KeyError:
-            chat_id = request['callback_query']['from']['id']
-            message = None
-            signal = None
-            phrase_to_study = None
-            callback_key = request['callback_query']['data']
-            callback_data = self.callback_data_dao.load_data(key=callback_key)
-            if callback_data and callback_data['signal'] == AddPhraseToStudySignal.key:
-                signal = AddPhraseToStudySignal()
-                phrase_to_study = PhraseToStudy(
-                    source_phrase=callback_data['phrase_to_study']['source_phrase'],
-                    target_phrase=callback_data['phrase_to_study']['target_phrase'],
-                )
+            try:
+                chat_id = request['callback_query']['from']['id']
+                message = None
+                signal = None
+                phrase_to_study = None
+                callback_key = request['callback_query']['data']
+                callback_data = self.callback_data_dao.load_data(key=callback_key)
+                if callback_data and callback_data['signal'] == AddPhraseToStudySignal.key:
+                    signal = AddPhraseToStudySignal()
+                    phrase_to_study = PhraseToStudy(
+                        source_phrase=callback_data['phrase_to_study']['source_phrase'],
+                        target_phrase=callback_data['phrase_to_study']['target_phrase'],
+                    )
+            except KeyError:
+                return
 
         user_request = UserRequest(
             chat_id=str(chat_id),
@@ -81,12 +101,23 @@ class TelegramBot:
                 phrases_to_study=user_response.phrases_to_study,
                 chat_id=chat_id,
             )
+        elif isinstance(user_response, GreetingResponse):
+            menu = self._build_menu()
+            self._send_message_with_menu(message=user_response.text, chat_id=chat_id, menu=menu)
 
     def _send_message(self, message: str, chat_id: str) -> None:
         self.bot.send_message(
             chat_id=chat_id,
             text=message,
             parse_mode='Markdown',
+        )
+
+    def _send_message_with_menu(self, message: str, chat_id: str, menu: ReplyKeyboardMarkup) -> None:
+        self.bot.send_message(
+            chat_id=chat_id,
+            text=message,
+            parse_mode='Markdown',
+            reply_markup=menu,
         )
 
     def _send_phrase_usages_in_different_languages(
@@ -157,3 +188,15 @@ class TelegramBot:
 
         keyboard = InlineKeyboardMarkup([[button] for button in buttons])
         return keyboard
+
+    def _build_menu(self) -> ReplyKeyboardMarkup:
+        buttons = [
+            [
+                KeyboardButton(text='Изучение слов'),
+            ],
+        ]
+
+        menu = ReplyKeyboardMarkup(
+            keyboard=buttons,
+        )
+        return menu
