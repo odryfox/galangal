@@ -42,7 +42,7 @@ services:
     ports:
       - "15432:5432"
     volumes:
-      - ./tmp/data/postgres:/var/lib/postgresql/data
+      - ./data/postgres:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: pass
