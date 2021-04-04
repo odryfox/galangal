@@ -1,5 +1,16 @@
 FROM python:3.8-slim
-ENV PYTHOUNNBUFFERED 1
+
+RUN apt-get update
+RUN apt-get upgrade -y
+RUN apt-get install -y \
+    netcat-openbsd \
+    gcc \
+    libpq-dev \
+    python-dev
+RUN apt-get clean
+
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
 RUN mkdir /code
 ADD . /code/
