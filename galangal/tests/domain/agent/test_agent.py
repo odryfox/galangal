@@ -1,8 +1,6 @@
 from unittest import mock
 
 from domain.agent.agent import SkillClassifier, create_agent
-from domain.agent.skills.add_phrase_to_study_skill import AddPhraseToStudySkill
-from domain.agent.skills.phrase_search_skill import PhraseSearchSkill
 from domain.entities import AddPhraseToStudySignal, UserRequest
 from millet import Agent
 
@@ -30,13 +28,9 @@ class TestAgent:
             phrase_to_study=None,
         )
 
-        skills = skill_classifier.classify(user_request)
+        skill_names = skill_classifier.classify(user_request)
 
-        assert len(skills), 1
-
-        skill = skills[0]
-        assert isinstance(skill, PhraseSearchSkill)
-        assert skill.search_phrase_usages_in_different_languages_usecase == search_phrase_usages_in_different_languages_usecase
+        assert skill_names == ['PhraseSearchSkill']
 
     def test_skill_classifier__signal(self):
         search_phrase_usages_in_different_languages_usecase = mock.Mock()
@@ -56,13 +50,9 @@ class TestAgent:
             phrase_to_study=None,
         )
 
-        skills = skill_classifier.classify(user_request)
+        skill_names = skill_classifier.classify(user_request)
 
-        assert len(skills), 1
-
-        skill = skills[0]
-        assert isinstance(skill, AddPhraseToStudySkill)
-        assert skill.save_phrase_to_study_usecase == save_phrase_to_study_usecase
+        assert skill_names == ['AddPhraseToStudySkill']
 
     @mock.patch('domain.agent.agent.SkillClassifier')
     def test_create_agent(self, skill_classifier_mock):

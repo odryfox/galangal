@@ -1,9 +1,9 @@
 from domain.entities import UserRequest
 from domain.usecases.save_phrase_to_study import SavePhraseToStudyUsecase
-from millet import Skill
+from millet import BaseSkill
 
 
-class AddPhraseToStudySkill(Skill):
+class AddPhraseToStudySkill(BaseSkill):
 
     def __init__(self, save_phrase_to_study_usecase: SavePhraseToStudyUsecase):
         self.save_phrase_to_study_usecase = save_phrase_to_study_usecase

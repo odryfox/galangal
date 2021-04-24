@@ -2,10 +2,10 @@ from domain.entities import UserRequest
 from domain.usecases.phrase_usages_usecases import (
     SearchPhraseUsagesInDifferentLanguagesUsecase
 )
-from millet import Skill
+from millet import BaseSkill
 
 
-class PhraseSearchSkill(Skill):
+class PhraseSearchSkill(BaseSkill):
 
     def __init__(self, search_phrase_usages_in_different_languages_usecase: SearchPhraseUsagesInDifferentLanguagesUsecase) -> None:
         self.search_phrase_usages_in_different_languages_usecase = search_phrase_usages_in_different_languages_usecase

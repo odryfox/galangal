@@ -15,7 +15,7 @@ from domain.usecases.phrase_usages_usecases import (
     SearchPhraseUsagesInDifferentLanguagesUsecase
 )
 from domain.usecases.save_phrase_to_study import SavePhraseToStudyUsecase
-from millet import Agent, Skill
+from millet import Agent, BaseSkill
 from millet.agent import BaseSkillClassifier
 
 
@@ -31,25 +31,30 @@ class SkillClassifier(BaseSkillClassifier):
         self.save_phrase_to_study_usecase = save_phrase_to_study_usecase
         self.phrase_dao = phrase_dao
 
-    def classify(self, message: UserRequest) -> List[Skill]:
+    @property
+    def skills_map(self) -> dict[str, BaseSkill]:
+        return {
+            'AddPhraseToStudySkill': AddPhraseToStudySkill(
+                save_phrase_to_study_usecase=self.save_phrase_to_study_usecase,
+            ),
+            'GreetingSkill': GreetingSkill(),
+            'LearnPhrasesSkill': LearnPhrasesSkill(phrase_dao=self.phrase_dao),
+            'PhraseSearchSkill': PhraseSearchSkill(
+                search_phrase_usages_in_different_languages_usecase=self.search_phrase_usages_in_different_languages_usecase,
+            ),
+        }
+
+    def classify(self, message: UserRequest) -> List[str]:
         skills = []
 
         if isinstance(message.signal, AddPhraseToStudySignal):
-            skill = AddPhraseToStudySkill(
-                save_phrase_to_study_usecase=self.save_phrase_to_study_usecase,
-            )
-            skills.append(skill)
+            skills.append('AddPhraseToStudySkill')
         elif isinstance(message.signal, GreetingSignal):
-            skill = GreetingSkill()
-            skills.append(skill)
+            skills.append('GreetingSkill')
         elif isinstance(message.signal, LearnPhrasesSignal):
-            skill = LearnPhrasesSkill(phrase_dao=self.phrase_dao)
-            skills.append(skill)
+            skills.append('LearnPhrasesSkill')
         elif message.message is not None:
-            skill = PhraseSearchSkill(
-                search_phrase_usages_in_different_languages_usecase=self.search_phrase_usages_in_different_languages_usecase,
-            )
-            skills.append(skill)
+            skills.append('PhraseSearchSkill')
 
         return skills
 

@@ -1,9 +1,9 @@
 from domain.entities import UserRequest
 from domain.interfaces import IPhraseDAO
-from millet import Skill
+from millet import BaseSkill
 
 
-class LearnPhrasesSkill(Skill):
+class LearnPhrasesSkill(BaseSkill):
 
     def __init__(self, phrase_dao: IPhraseDAO):
         super().__init__()
@@ -28,4 +28,4 @@ class LearnPhrasesSkill(Skill):
         if self.count <= 3:
             self.start(answer)
         else:
-            self.finish('Тренировка завершена')
+            self.say('Тренировка завершена')
