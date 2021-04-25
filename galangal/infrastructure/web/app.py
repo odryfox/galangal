@@ -8,6 +8,7 @@ from flask import Flask
 from infrastructure.db.connection import DB
 from infrastructure.db.phrase_dao import DBPhraseDAO
 from infrastructure.redis.callback_data_dao import RedisCallbackDataDAO
+from infrastructure.redis.learn_phrases_dao import RedisLearnPhrasesDAO
 from infrastructure.telegram.bot import TelegramBot
 from infrastructure.third_party.reverso import (
     ReversoContextPhraseUsagesInDifferentLanguagesService
@@ -37,13 +38,17 @@ def create_app(config: Config) -> Flask:
     phrase_dao = DBPhraseDAO(session=session)
     save_phrase_to_study_usecase = SavePhraseToStudyUsecase(phrase_dao=phrase_dao)
 
+    redis = Redis.from_url(config.REDIS_URL)
+    learn_phrases_dao = RedisLearnPhrasesDAO(redis=redis)
+
     agent = create_agent(
         search_phrase_usages_in_different_languages_usecase=search_phrase_usages_in_different_languages_usecase,
         save_phrase_to_study_usecase=save_phrase_to_study_usecase,
         phrase_dao=phrase_dao,
+        learn_phrases_dao=learn_phrases_dao,
+        redis=redis,
     )
 
-    redis = Redis.from_url(config.REDIS_URL)
     callback_data_dao = RedisCallbackDataDAO(redis=redis)
     telegram_bot = TelegramBot(
         token=config.TELEGRAM_TOKEN,

@@ -49,3 +49,14 @@ class ICallbackDataDAO(ABC):
     @abstractmethod
     def load_data(self, key: str) -> Optional[dict]:
         pass
+
+
+class ILearnPhrasesDAO(ABC):
+
+    @abstractmethod
+    def save_translate(self, chat_id: str, translate: str) -> None:
+        pass
+
+    @abstractmethod
+    def get_translate(self, chat_id: str) -> str:
+        pass

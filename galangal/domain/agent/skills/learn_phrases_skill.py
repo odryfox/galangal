@@ -1,31 +1,43 @@
 from domain.entities import UserRequest
-from domain.interfaces import IPhraseDAO
+from domain.interfaces import ILearnPhrasesDAO, IPhraseDAO
 from millet import BaseSkill
 
 
 class LearnPhrasesSkill(BaseSkill):
 
-    def __init__(self, phrase_dao: IPhraseDAO):
-        super().__init__()
-        self._phrase_dao = phrase_dao
-        self.count = 1
+    INITIAL_STATE_NAME = 'ask_phrase'
 
-    def start(self, initial_message: UserRequest):
+    def __init__(self, phrase_dao: IPhraseDAO, learn_phrases_dao: ILearnPhrasesDAO):
+        self._phrase_dao = phrase_dao
+        self._learn_phrases_dao = learn_phrases_dao
+
+    def ask_phrase(self, initial_message: UserRequest):
         phrase = self._phrase_dao.get_phrase(initial_message.chat_id)
         if not phrase:
             self.say('Нет слов для изучения')
             return
-        self._phrase = phrase
-        self.ask(question=f'{self.count}. {phrase.source_phrase}', direct_to=self.check)
+
+        translate = phrase.target_phrase
+        self._learn_phrases_dao.save_translate(
+            chat_id=initial_message.chat_id,
+            translate=translate,
+        )
+
+        self.ask(phrase.source_phrase, direct_to='check')
 
     def check(self, answer: UserRequest):
-        if answer.message == self._phrase.target_phrase:
-            self.say(f'{self.count}. Молодчик')
-        else:
-            self.say(f'{self.count}. Ошибка. Правильный ответ: {self._phrase.target_phrase}')
+        if answer.signal:
+            self.say('Обучение закончено')
+            return
 
-        self.count += 1
-        if self.count <= 3:
-            self.start(answer)
+        translate = self._learn_phrases_dao.get_translate(answer.chat_id)
+        if not translate:
+            self.say('Произошла ошибка')
+            return
+
+        if answer.message.lower().strip() == translate.lower().strip():
+            self.say('Верно')
         else:
-            self.say('Тренировка завершена')
+            self.say(f'Ошибка. Правильный ответ: {translate}')
+
+        self.ask_phrase(answer)

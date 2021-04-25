@@ -2,6 +2,7 @@ from typing import Union
 
 from domain.entities import (
     AddPhraseToStudySignal,
+    LearnPhrasesSignal,
     PhraseToStudy,
     UserRequest,
     UserResponse
@@ -36,6 +37,10 @@ class CLIBot:
                     source_phrase=parts[1],
                     target_phrase=parts[2],
                 )
+            elif parts[0][1:] == LearnPhrasesSignal.key:
+                message = None
+                signal = LearnPhrasesSignal()
+                phrase_to_study = None
             else:
                 message = request
                 signal = None

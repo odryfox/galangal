@@ -8,9 +8,11 @@ from infrastructure.cli.bot import CLIBot
 from infrastructure.cli.config import Config
 from infrastructure.db.connection import DB
 from infrastructure.db.phrase_dao import DBPhraseDAO
+from infrastructure.redis.learn_phrases_dao import RedisLearnPhrasesDAO
 from infrastructure.third_party.reverso import (
     ReversoContextPhraseUsagesInDifferentLanguagesService
 )
+from redis import Redis
 
 
 class App:
@@ -31,10 +33,15 @@ class App:
         phrase_dao = DBPhraseDAO(session=session)
         save_phrase_to_study_usecase = SavePhraseToStudyUsecase(phrase_dao=phrase_dao)
 
+        redis = Redis.from_url(config.REDIS_URL)
+        learn_phrases_dao = RedisLearnPhrasesDAO(redis=redis)
+
         agent = create_agent(
             search_phrase_usages_in_different_languages_usecase=search_phrase_usages_in_different_languages_usecase,
             save_phrase_to_study_usecase=save_phrase_to_study_usecase,
             phrase_dao=phrase_dao,
+            learn_phrases_dao=learn_phrases_dao,
+            redis=redis,
         )
 
         self.cli_bot = CLIBot(agent=agent)
