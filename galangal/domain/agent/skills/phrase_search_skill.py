@@ -10,7 +10,7 @@ class PhraseSearchSkill(BaseSkill):
     def __init__(self, search_phrase_usages_in_different_languages_usecase: SearchPhraseUsagesInDifferentLanguagesUsecase) -> None:
         self.search_phrase_usages_in_different_languages_usecase = search_phrase_usages_in_different_languages_usecase
 
-    def start(self, initial_message: UserRequest):
+    def execute(self, initial_message: UserRequest):
         search_phrases_response = self.search_phrase_usages_in_different_languages_usecase.execute(
             message=initial_message.message
         )

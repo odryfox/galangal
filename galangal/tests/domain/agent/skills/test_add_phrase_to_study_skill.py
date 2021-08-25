@@ -28,7 +28,7 @@ class TestAddPhraseToStudySkill:
                 target_phrase='target_phrase',
             ),
         )
-        self.skill.start(initial_message=user_request)
+        self.skill.execute(initial_message=user_request)
 
         self.save_phrase_to_study_usecase_mock.execute.assert_called_once_with(
             chat_id=self.chat_id,

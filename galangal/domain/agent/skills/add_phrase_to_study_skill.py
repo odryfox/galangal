@@ -8,7 +8,7 @@ class AddPhraseToStudySkill(BaseSkill):
     def __init__(self, save_phrase_to_study_usecase: SavePhraseToStudyUsecase):
         self.save_phrase_to_study_usecase = save_phrase_to_study_usecase
 
-    def start(self, initial_message: UserRequest):
+    def execute(self, initial_message: UserRequest):
         self.save_phrase_to_study_usecase.execute(
             chat_id=initial_message.chat_id,
             source_phrase=initial_message.phrase_to_study.source_phrase,

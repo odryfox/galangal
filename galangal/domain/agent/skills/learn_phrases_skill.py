@@ -5,7 +5,7 @@ from millet import BaseSkill
 
 class LearnPhrasesSkill(BaseSkill):
 
-    INITIAL_STATE_NAME = 'ask_phrase'
+    initial_state_name = 'ask_phrase'
 
     def __init__(self, phrase_dao: IPhraseDAO, learn_phrases_dao: ILearnPhrasesDAO):
         self._phrase_dao = phrase_dao

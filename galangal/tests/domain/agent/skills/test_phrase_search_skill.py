@@ -25,7 +25,7 @@ class TestPhraseSearchSkill:
             signal=None,
             phrase_to_study=None,
         )
-        self.skill.start(initial_message=user_request)
+        self.skill.execute(initial_message=user_request)
 
         self.search_phrase_usages_in_different_languages_usecase_mock.execute.assert_called_once_with(
             message=user_request.message
@@ -44,7 +44,7 @@ class TestPhraseSearchSkill:
             signal=None,
             phrase_to_study=None,
         )
-        self.skill.start(initial_message=user_request)
+        self.skill.execute(initial_message=user_request)
 
         self.search_phrase_usages_in_different_languages_usecase_mock.execute.assert_called_once_with(
             message=user_request.message
