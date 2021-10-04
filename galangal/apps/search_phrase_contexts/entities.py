@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class PhraseContextEntity:
+class PhraseContext:
     source_language_phrase: str
     source_language_context: str
     target_language_phrase: str

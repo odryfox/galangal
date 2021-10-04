@@ -3,7 +3,7 @@ from typing import List, Optional
 import bs4
 import language.constants
 import requests
-from search_phrase_contexts.entities import PhraseContextEntity
+from search_phrase_contexts.entities import PhraseContext
 
 
 class PhraseContextsDAO:
@@ -47,7 +47,7 @@ class PhraseContextsDAO:
         source_language: language.constants.Language,
         target_language: language.constants.Language,
         limit: Optional[int] = None,
-    ) -> List[PhraseContextEntity]:
+    ) -> List[PhraseContext]:
 
         url = self._build_url(
             phrase=phrase,
@@ -64,7 +64,7 @@ class PhraseContextsDAO:
         if limit is not None:
             examples = examples[:limit]
 
-        phrase_contexts_entities = []
+        phrase_contexts = []
 
         for example in examples:
             source = example.find(class_='src')
@@ -75,12 +75,12 @@ class PhraseContextsDAO:
             target_language_phrase = target.find('a').text.strip()
             target_language_context = target.find(class_='text').text.strip()
 
-            phrase_context_entity = PhraseContextEntity(
+            phrase_context = PhraseContext(
                 source_language_phrase=source_language_phrase,
                 source_language_context=source_language_context,
                 target_language_phrase=target_language_phrase,
                 target_language_context=target_language_context,
             )
-            phrase_contexts_entities.append(phrase_context_entity)
+            phrase_contexts.append(phrase_context)
 
-        return phrase_contexts_entities
+        return phrase_contexts

@@ -4,7 +4,7 @@ import pytest
 from language.constants import Language
 from language.services import RecognizeLanguageService
 from search_phrase_contexts.daos import PhraseContextsDAO
-from search_phrase_contexts.entities import PhraseContextEntity
+from search_phrase_contexts.entities import PhraseContext
 from search_phrase_contexts.use_cases import SearchPhraseContextsUseCase
 
 
@@ -18,14 +18,14 @@ class TestSearchPhraseContextsUseCase:
         )
 
     def test_execute__usual_phrase(self):
-        phrase_contexts_entities_expected = [
-            PhraseContextEntity(
+        phrase_contexts_expected = [
+            PhraseContext(
                 source_language_phrase='I will be back',
                 source_language_context='If anyone should phone, say I will be back at one o\'clock.',
                 target_language_phrase='я вернусь',
                 target_language_context='Если кто-нибудь позвонит, скажи, что я вернусь в час.',
             ),
-            PhraseContextEntity(
+            PhraseContext(
                 source_language_phrase='I will be back',
                 source_language_context='I will be back by 5, but just...',
                 target_language_phrase='Я вернусь',
@@ -33,15 +33,15 @@ class TestSearchPhraseContextsUseCase:
             ),
         ]
         self.phrase_contexts_dao.search_phrase_contexts.return_value = (
-            phrase_contexts_entities_expected
+            phrase_contexts_expected
         )
 
-        phrase_contexts_entities_actual = self.use_case.execute(
+        phrase_contexts_actual = self.use_case.execute(
             phrase='I will be back',
         )
 
         assert (
-            phrase_contexts_entities_actual == phrase_contexts_entities_expected
+            phrase_contexts_actual == phrase_contexts_expected
         )
 
         self.phrase_contexts_dao.search_phrase_contexts.assert_called_once_with(

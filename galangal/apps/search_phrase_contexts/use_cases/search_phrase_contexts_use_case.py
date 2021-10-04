@@ -3,7 +3,7 @@ from typing import List
 import language.constants
 from language.services import RecognizeLanguageService
 from search_phrase_contexts.daos import PhraseContextsDAO
-from search_phrase_contexts.entities import PhraseContextEntity
+from search_phrase_contexts.entities import PhraseContext
 
 
 class SearchPhraseContextsUseCase:
@@ -27,7 +27,7 @@ class SearchPhraseContextsUseCase:
     def execute(
         self,
         phrase: str,
-    ) -> List[PhraseContextEntity]:
+    ) -> List[PhraseContext]:
 
         try:
             source_language = self.recognize_language_service.execute(phrase)
@@ -41,10 +41,10 @@ class SearchPhraseContextsUseCase:
         else:
             target_language = language.constants.Language.RU
 
-        phrase_contexts_entities = self.phrase_contexts_dao.search_phrase_contexts(
+        phrase_contexts = self.phrase_contexts_dao.search_phrase_contexts(
             phrase=phrase,
             source_language=source_language,
             target_language=target_language,
             limit=self.CONTEXTS_LIMIT,
         )
-        return phrase_contexts_entities
+        return phrase_contexts

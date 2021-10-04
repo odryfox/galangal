@@ -2,7 +2,7 @@ from unittest import mock
 
 from language.constants import Language
 from search_phrase_contexts.daos import PhraseContextsDAO
-from search_phrase_contexts.entities import PhraseContextEntity
+from search_phrase_contexts.entities import PhraseContext
 
 
 class TestPhraseContextsDAO:
@@ -33,28 +33,28 @@ class TestPhraseContextsDAO:
         </div>
         """
 
-        phrase_contexts_entities_actual = self.dao.search_phrase_contexts(
+        phrase_contexts_actual = self.dao.search_phrase_contexts(
             phrase='I will be back',
             source_language=Language.EN,
             target_language=Language.RU,
             limit=5,
         )
 
-        phrase_contexts_entities_expected = [
-            PhraseContextEntity(
+        phrase_contexts_expected = [
+            PhraseContext(
                 source_language_phrase='I will be back',
                 source_language_context='If anyone should phone, say I will be back at one o\'clock.',
                 target_language_phrase='я вернусь',
                 target_language_context='Если кто-нибудь позвонит, скажи, что я вернусь в час.',
             ),
-            PhraseContextEntity(
+            PhraseContext(
                 source_language_phrase='I will be back',
                 source_language_context='I will be back by 5, but just...',
                 target_language_phrase='Я вернусь',
                 target_language_context='Я вернусь к пяти, но если...',
             ),
         ]
-        assert phrase_contexts_entities_actual == phrase_contexts_entities_expected
+        assert phrase_contexts_actual == phrase_contexts_expected
 
         url_expected = 'https://context.reverso.net/translation/' \
                        'english-russian/I+will+be+back'
