@@ -33,8 +33,8 @@ class SearchPhraseContextsSkill(BaseSkill):
 
         text_components = [
             '{}\n{}\n\n'.format(
-                phrase_context.source_language_phrase,
-                phrase_context.target_language_phrase,
+                phrase_context.source_language_context,
+                phrase_context.target_language_context,
             )
             for phrase_context in phrase_contexts
         ]

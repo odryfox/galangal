@@ -1,4 +1,4 @@
-from bot.skill_classifier import SkillClassifier
+from bot.agent.skill_classifier import SkillClassifier
 from millet import Agent
 from millet.context import RedisContextManager
 from redis import Redis
