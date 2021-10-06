@@ -2,11 +2,12 @@ import os
 
 from dotenv import load_dotenv
 
-load_dotenv()
-
 
 class Config:
-    DEBUG = os.environ.get('DEBUG')
-    DATABASE_URL = os.environ.get('DATABASE_URL')
-    DATABASE_TEST_URL = os.environ.get('DATABASE_TEST_URL')
-    REDIS_URL = os.environ.get('REDIS_URL')
+    def __init__(self):
+        load_dotenv()
+
+        self.DEBUG = os.environ.get('DEBUG')
+        self.DATABASE_URL = os.environ.get('DATABASE_URL')
+        self.DATABASE_TEST_URL = os.environ.get('DATABASE_TEST_URL')
+        self.REDIS_URL = os.environ.get('REDIS_URL')
