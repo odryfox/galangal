@@ -1,6 +1,6 @@
 from alembic.command import upgrade as alembic_upgrade
 from alembic.config import Config as AlembicConfig
-from infrastructure.web.config import EnvironmentConfig
+from config import Config
 
 
 def migrate_db(database_url: str):
@@ -9,5 +9,5 @@ def migrate_db(database_url: str):
     alembic_upgrade(alembic_config, 'head')
 
 
-config = EnvironmentConfig()
+config = Config()
 migrate_db(database_url=config.DATABASE_URL)

@@ -1,1 +1,2 @@
+from .add_phrase_to_study_use_case import AddPhraseToStudyUseCase
 from .suggest_phrases_to_study_use_case import SuggestPhrasesToStudyUseCase
