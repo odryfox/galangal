@@ -1,3 +1,5 @@
+from typing import Union
+
 import bot.constants
 from bot.markdown import Action, MarkdownActionComponent, MarkdownDocument
 from millet import BaseSkill
@@ -15,21 +17,18 @@ class SearchPhraseContextsSkill(BaseSkill):
         self.search_phrase_contexts_use_case = search_phrase_contexts_use_case
         self.suggest_phrases_to_study_use_case = suggest_phrases_to_study_use_case
 
-    def execute(self, message: str):
+    def execute(self, message: str) -> Union[str, MarkdownDocument]:
         try:
             phrase_contexts = (
                 self.search_phrase_contexts_use_case.execute(phrase=message)
             )
         except SearchPhraseContextsUseCase.MultilingualException:
-            self.say('Фраза должна быть на русском или английском языке')
-            return
+            return 'Фраза должна быть на русском или английском языке'
         except SearchPhraseContextsUseCase.NonSpecificLanguageException:
-            self.say('Это легко) Фраза так и переводится: {}'.format(message))
-            return
+            return 'Это легко) Фраза так и переводится: {}'.format(message)
 
         if not phrase_contexts:
-            self.say('К сожалению я ничего не нашел'.format(message))
-            return
+            return 'К сожалению я ничего не нашел'.format(message)
 
         text_components = [
             '{}\n{}\n\n'.format(
@@ -64,4 +63,4 @@ class SearchPhraseContextsSkill(BaseSkill):
         response = MarkdownDocument(
             components=text_components + add_phrases_to_study_action_components,
         )
-        self.say(response)
+        return response
