@@ -8,7 +8,7 @@ services:
     volumes:
       - ./galangal:/galangal
     restart: always
-    command: bash -c "/usr/wait-for-it.sh --timeout=0 postgres:5432 && /usr/wait-for-it.sh --timeout=0 postgres_test:5432 && PYTHONPATH=galangal/apps:apps python migrate.py && PYTHONPATH=galangal/apps:apps python manage_web.py"
+    command: bash -c "/usr/wait-for-it.sh --timeout=0 postgres:5432 && /usr/wait-for-it.sh --timeout=0 postgres_test:5432 && PYTHONPATH=apps python migrate.py && PYTHONPATH=apps python manage_web.py"
     env_file:
       - .env
     environment:

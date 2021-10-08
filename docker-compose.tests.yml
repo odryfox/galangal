@@ -6,7 +6,7 @@ services:
     build: ./galangal
     volumes:
       - ./galangal:/galangal
-    command: bash -c "/usr/wait-for-it.sh --timeout=0 postgres_test:5432 && PYTHONPATH=galangal/apps:apps python -m pytest --verbose --disable-warnings --cov=."
+    command: bash -c "/usr/wait-for-it.sh --timeout=0 postgres_test:5432 && PYTHONPATH=apps python -m pytest --verbose --disable-warnings --cov=."
     env_file:
       - .env
     environment:
