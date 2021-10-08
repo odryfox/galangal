@@ -5,13 +5,13 @@ services:
   tests:
     build: ./galangal
     volumes:
-      - ./galangal:/code
-    command: bash -c "/usr/wait-for-it.sh --timeout=0 postgres_test:5432 && python -m pytest tests --verbose --disable-warnings --cov=."
+      - ./galangal:/galangal
+    command: bash -c "/usr/wait-for-it.sh --timeout=0 postgres_test:5432 && PYTHONPATH=galangal/apps:apps python -m pytest --verbose --disable-warnings --cov=."
     env_file:
       - .env
     environment:
-      TEST_REDIS_URL: "redis://:pass@redis_test:6379/0"
-      TEST_DATABASE_URL: "postgresql://postgres:pass@postgres_test:5432/galangal"
+      REDIS_TEST_URL: "redis://:pass@redis_test:6379/0"
+      DATABASE_TEST_URL: "postgresql://postgres:pass@postgres_test:5432/galangal"
     depends_on:
       - redis_test
       - postgres_test

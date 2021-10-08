@@ -46,7 +46,7 @@ from sqlalchemy_utils import create_database, database_exists, drop_database
 @pytest.fixture(scope='function', autouse=True)
 def redis() -> Redis:
     config = Config()
-    redis = Redis.from_url(url=config.REDIS_URL)
+    redis = Redis.from_url(url=config.REDIS_TEST_URL)
 
     redis.flushdb()
 
