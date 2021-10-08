@@ -6,7 +6,8 @@ RUN apt-get install -y \
     netcat-openbsd \
     gcc \
     libpq-dev \
-    python-dev
+    python-dev \
+    make
 RUN apt-get clean
 
 ENV PYTHONDONTWRITEBYTECODE 1
