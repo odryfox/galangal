@@ -1,5 +1,6 @@
 from typing import List, Optional, Tuple, Union
 
+from bot.constants import ActionType
 from bot.daos import CallbackDataDAO
 from bot.markdown import (
     Action,
@@ -49,7 +50,7 @@ class TelegramProcessMessageService:
                 )
                 if 'action' in callback_data:
                     message = Action(
-                        action_type=callback_data['action']['action_type'],
+                        action_type=ActionType(callback_data['action']['action_type']),
                         params=callback_data['action']['params'],
                     )
                 else:
@@ -94,7 +95,7 @@ class TelegramProcessMessageService:
         for action_component in actions_components:
             data = {
                 'action': {
-                    'action_type': action_component.action.action_type,
+                    'action_type': action_component.action.action_type.value,
                     'params': action_component.action.params,
                 }
             }
@@ -112,12 +113,15 @@ class TelegramProcessMessageService:
 
     def _send_user_response(
         self,
-        user_response: MarkdownDocument,
+        user_response: Union[str, MarkdownDocument],
         chat_id: str,
     ) -> None:
         message = ''
         actions_components = []
         choices_components = []
+
+        if isinstance(user_response, str):
+            user_response = MarkdownDocument(components=[user_response])
 
         for component in user_response.components:
             if isinstance(component, str):
@@ -148,7 +152,7 @@ class TelegramProcessMessageService:
         if not message or not chat_id:
             return
 
-        user_responses: List[MarkdownDocument] = self.agent.query(
+        user_responses: List[Union[str, MarkdownDocument]] = self.agent.query(
             message=message,
             user_id=chat_id,
         )

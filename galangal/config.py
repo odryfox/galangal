@@ -12,3 +12,7 @@ class Config:
         self.DATABASE_TEST_URL = os.environ.get('DATABASE_TEST_URL')
         self.REDIS_URL = os.environ.get('REDIS_URL')
         self.REDIS_TEST_URL = os.environ.get('REDIS_TEST_URL')
+        self.TELEGRAM_WEBHOOK_BASE_URL = os.environ.get(
+            'TELEGRAM_WEBHOOK_BASE_URL'
+        )
+        self.TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
