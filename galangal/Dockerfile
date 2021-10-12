@@ -6,15 +6,16 @@ RUN apt-get install -y \
     netcat-openbsd \
     gcc \
     libpq-dev \
-    python-dev
+    python-dev \
+    make
 RUN apt-get clean
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-RUN mkdir /code
-ADD . /code/
-WORKDIR /code
+RUN mkdir /galangal
+ADD . /galangal/
+WORKDIR /galangal
 
 RUN pip install -r requirements.txt
 

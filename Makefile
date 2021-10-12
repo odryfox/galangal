@@ -24,4 +24,4 @@ linter:
 	PYTHONPATH=galangal/ pylint galangal/
 
 cli:
-	python galangal/manage_cli.py search
+	PYTHONPATH=apps/ python manage_cli.py

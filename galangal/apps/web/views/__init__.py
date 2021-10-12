@@ -1,0 +1,3 @@
+from .health_check_view import HealthCheckView
+from .telegram_process_message_view import TelegramProcessMessageView
+from .telegram_register_webhook_view import TelegramRegisterWebhookView

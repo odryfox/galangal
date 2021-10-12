@@ -3,7 +3,7 @@ from datetime import datetime
 
 from alembic.command import revision as alembic_revision
 from alembic.config import Config as AlembicConfig
-from infrastructure.web.config import EnvironmentConfig
+from config import EnvironmentConfig
 
 
 def make_migration_db(database_url: str) -> None:

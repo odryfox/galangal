@@ -1,5 +1,5 @@
-from infrastructure.cli import create_app
-from infrastructure.cli.config import EnvironmentConfig
+from cli import create_app
+from config import EnvironmentConfig
 
 config = EnvironmentConfig()
 app = create_app(config=config)

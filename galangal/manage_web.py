@@ -1,5 +1,5 @@
-from infrastructure.web import create_app
-from infrastructure.web.config import EnvironmentConfig
+from config import EnvironmentConfig
+from web import create_app
 
 config = EnvironmentConfig()
 app = create_app(config=config)
