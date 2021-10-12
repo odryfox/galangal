@@ -1,18 +1,27 @@
 import os
 
-from dotenv import load_dotenv
-
 
 class Config:
-    def __init__(self):
-        load_dotenv()
+    DEBUG = True
+    DATABASE_URL = 'postgresql://postgres:pass@postgres_test:5432/galangal'
+    REDIS_URL = 'redis://:pass@redis_test:6379/0'
+    TELEGRAM_WEBHOOK_BASE_URL = 'https://abcdef123456.ngrok.io'
+    TELEGRAM_TOKEN = '1234567890:ABCDEFGH-abcdefghijklmnopqrstuvwxyz'
 
-        self.DEBUG = os.environ.get('DEBUG')
-        self.DATABASE_URL = os.environ.get('DATABASE_URL')
-        self.DATABASE_TEST_URL = os.environ.get('DATABASE_TEST_URL')
-        self.REDIS_URL = os.environ.get('REDIS_URL')
-        self.REDIS_TEST_URL = os.environ.get('REDIS_TEST_URL')
-        self.TELEGRAM_WEBHOOK_BASE_URL = os.environ.get(
-            'TELEGRAM_WEBHOOK_BASE_URL'
-        )
-        self.TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
+
+class EnvironmentConfig(Config):
+    DEBUG = os.environ.get('DEBUG')
+    DATABASE_URL = os.environ.get('DATABASE_URL')
+    REDIS_URL = os.environ.get('REDIS_URL')
+    TELEGRAM_WEBHOOK_BASE_URL = os.environ.get(
+        'TELEGRAM_WEBHOOK_BASE_URL'
+    )
+    TELEGRAM_TOKEN = os.environ.get('TELEGRAM_TOKEN')
+
+
+class EnvironmentTestConfig(Config):
+    DEBUG = os.environ.get('DEBUG')
+    DATABASE_URL = os.environ.get('DATABASE_TEST_URL')
+    REDIS_URL = os.environ.get('REDIS_TEST_URL')
+    TELEGRAM_WEBHOOK_BASE_URL = 'https://abcdef123456.ngrok.io'
+    TELEGRAM_TOKEN = '1234567890:ABCDEFGH-abcdefghijklmnopqrstuvwxyz'

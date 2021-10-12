@@ -1,7 +1,7 @@
-from config import Config
+from config import EnvironmentConfig
 from web import create_app
 
-config = Config()
+config = EnvironmentConfig()
 app = create_app(config=config)
 
 if __name__ == '__main__':
