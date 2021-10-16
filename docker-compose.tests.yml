@@ -10,6 +10,8 @@ services:
     env_file:
       - .env
     environment:
+      DEBUG: "false"
+      TESTING: "true"
       REDIS_TEST_URL: "redis://:pass@redis_test:6379/0"
       DATABASE_TEST_URL: "postgresql://postgres:pass@postgres_test:5432/galangal"
     depends_on:
