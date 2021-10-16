@@ -1,4 +1,4 @@
-import config
+import settings
 from bot.agent.agent import create_agent
 from bot.daos import CallbackDataDAO
 from bot.messengers.telegram import TelegramRegisterWebhookService
@@ -28,12 +28,12 @@ def create_app():
 
     add('/health-check', view_func=HealthCheckView.as_view('Health Check'))
 
-    telegram_webhook_path = '/bot/messages/{}'.format(config.TELEGRAM_TOKEN)
+    telegram_webhook_path = '/bot/messages/{}'.format(settings.TELEGRAM_TOKEN)
     telegram_webhook_url = '{}{}'.format(
-        config.TELEGRAM_WEBHOOK_BASE_URL, telegram_webhook_path
+        settings.TELEGRAM_WEBHOOK_BASE_URL, telegram_webhook_path
     )
 
-    redis = Redis.from_url(config.REDIS_URL)
+    redis = Redis.from_url(settings.REDIS_URL)
 
     agent = create_agent(
         add_phrase_to_study_use_case=AddPhraseToStudyUseCase(
@@ -48,13 +48,13 @@ def create_app():
     )
 
     telegram_process_message_service = TelegramProcessMessageService(
-        token=config.TELEGRAM_TOKEN,
+        token=settings.TELEGRAM_TOKEN,
         agent=agent,
         callback_data_dao=CallbackDataDAO(redis=redis),
     )
 
     telegram_register_webhook_service = TelegramRegisterWebhookService(
-        token=config.TELEGRAM_TOKEN,
+        token=settings.TELEGRAM_TOKEN,
     )
 
     add(telegram_webhook_path, view_func=TelegramProcessMessageView.as_view(

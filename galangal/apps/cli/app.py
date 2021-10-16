@@ -1,4 +1,4 @@
-import config
+import settings
 from bot.agent.agent import create_agent
 from bot.messengers.cli import CLIProcessMessageService
 from language.services import RecognizeLanguageService
@@ -23,7 +23,7 @@ class App:
                 phrase_contexts_dao=PhraseContextsDAO(),
             ),
             suggest_phrases_to_study_use_case=SuggestPhrasesToStudyUseCase(),
-            redis=Redis.from_url(config.REDIS_URL),
+            redis=Redis.from_url(settings.REDIS_URL),
         )
         self.process_message_service = CLIProcessMessageService(
             agent=agent

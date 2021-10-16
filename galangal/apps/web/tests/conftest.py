@@ -1,8 +1,8 @@
 from unittest import mock
 from unittest.mock import patch
 
-import config
 import pytest
+import settings
 from flask.testing import FlaskClient
 from web import create_app
 

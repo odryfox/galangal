@@ -1,5 +1,5 @@
-import config
 import pytest
+import settings
 from alembic.command import upgrade as alembic_upgrade
 from alembic.config import Config as AlembicConfig
 from db.connection import DB
@@ -15,7 +15,7 @@ def migrate_db(database_url: str):
 
 @pytest.fixture(scope='session', autouse=True)
 def db():
-    database_url = config.DATABASE_URL
+    database_url = settings.DATABASE_URL
 
     if database_exists(database_url):
         drop_database(database_url)
@@ -43,7 +43,7 @@ def session(db: DB):
 
 @pytest.fixture(scope='function', autouse=True)
 def redis() -> Redis:
-    redis = Redis.from_url(url=config.REDIS_URL)
+    redis = Redis.from_url(url=settings.REDIS_URL)
 
     redis.flushdb()
 

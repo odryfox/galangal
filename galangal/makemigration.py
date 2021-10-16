@@ -1,7 +1,7 @@
 import sys
 from datetime import datetime
 
-import config
+import settings
 from alembic.command import revision as alembic_revision
 from alembic.config import Config as AlembicConfig
 
@@ -26,4 +26,4 @@ def make_migration_db(database_url: str) -> None:
     )
 
 
-make_migration_db(database_url=config.DATABASE_URL)
+make_migration_db(database_url=settings.DATABASE_URL)
