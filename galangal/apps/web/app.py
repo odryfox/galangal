@@ -5,6 +5,7 @@ from bot.messengers.telegram import TelegramRegisterWebhookService
 from bot.messengers.telegram.process_message_service import (
     TelegramProcessMessageService
 )
+from bot.views import TelegramProcessMessageView, TelegramRegisterWebhookView
 from flask import Flask
 from language.services import RecognizeLanguageService
 from redis import Redis
@@ -15,11 +16,7 @@ from vocabulary_trainer.use_cases import (
     AddPhraseToStudyUseCase,
     SuggestPhrasesToStudyUseCase
 )
-from web.views import (
-    HealthCheckView,
-    TelegramProcessMessageView,
-    TelegramRegisterWebhookView
-)
+from web.views import HealthCheckView
 
 
 def create_app():
