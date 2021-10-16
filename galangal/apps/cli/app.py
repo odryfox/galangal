@@ -1,6 +1,6 @@
+import config
 from bot.agent.agent import create_agent
 from bot.messengers.cli import CLIProcessMessageService
-from config import Config
 from language.services import RecognizeLanguageService
 from redis import Redis
 from search_phrase_contexts.daos import PhraseContextsDAO
@@ -13,7 +13,7 @@ from vocabulary_trainer.use_cases import (
 
 
 class App:
-    def __init__(self, config: Config):
+    def __init__(self):
         agent = create_agent(
             add_phrase_to_study_use_case=AddPhraseToStudyUseCase(
                 phrase_to_study_dao=PhraseToStudyDAO(),
@@ -39,5 +39,5 @@ class App:
                 break
 
 
-def create_app(config: Config):
-    return App(config=config)
+def create_app():
+    return App()

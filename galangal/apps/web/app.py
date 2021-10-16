@@ -1,10 +1,10 @@
+import config
 from bot.agent.agent import create_agent
 from bot.daos import CallbackDataDAO
 from bot.messengers.telegram import TelegramRegisterWebhookService
 from bot.messengers.telegram.process_message_service import (
     TelegramProcessMessageService
 )
-from config import Config
 from flask import Flask
 from language.services import RecognizeLanguageService
 from redis import Redis
@@ -22,7 +22,7 @@ from web.views import (
 )
 
 
-def create_app(config: Config):
+def create_app():
     flask_app = Flask('web_app')
     add = flask_app.add_url_rule
 
