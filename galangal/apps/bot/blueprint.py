@@ -1,7 +1,6 @@
 import settings
 from bot.agent.agent import create_agent
 from bot.daos import CallbackDataDAO
-from bot.messengers.telegram import TelegramRegisterWebhookService
 from bot.messengers.telegram.process_message_service import (
     TelegramProcessMessageService
 )
@@ -21,9 +20,6 @@ blueprint = Blueprint('Bot', __name__)
 add = blueprint.add_url_rule
 
 telegram_webhook_path = '/bot/messages/{}'.format(settings.TELEGRAM_TOKEN)
-telegram_webhook_url = '{}{}'.format(
-    settings.TELEGRAM_WEBHOOK_BASE_URL, telegram_webhook_path
-)
 
 redis = Redis.from_url(settings.REDIS_URL)
 
@@ -45,10 +41,6 @@ telegram_process_message_service = TelegramProcessMessageService(
     callback_data_dao=CallbackDataDAO(redis=redis),
 )
 
-telegram_register_webhook_service = TelegramRegisterWebhookService(
-    token=settings.TELEGRAM_TOKEN,
-)
-
 add(telegram_webhook_path, view_func=TelegramProcessMessageView.as_view(
     'bot_messages',
     telegram_process_message_service=telegram_process_message_service,
@@ -56,6 +48,5 @@ add(telegram_webhook_path, view_func=TelegramProcessMessageView.as_view(
 
 add('/bot/webhooks', view_func=TelegramRegisterWebhookView.as_view(
     'bot_webhooks',
-    telegram_register_webhook_service=telegram_register_webhook_service,
-    telegram_webhook_url=telegram_webhook_url,
+    telegram_webhook_path=telegram_webhook_path,
 ))
