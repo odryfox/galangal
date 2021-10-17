@@ -1,5 +1,7 @@
 from typing import List, Optional, Tuple, Union
 
+import settings
+from bot.agent import create_agent
 from bot.constants import ActionType
 from bot.daos import CallbackDataDAO
 from bot.markdown import (
@@ -10,7 +12,6 @@ from bot.markdown import (
     MarkdownImportantTextComponent,
     MarkdownTextComponent
 )
-from millet import Agent
 from telegram import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
@@ -22,16 +23,10 @@ from telegram.ext import Updater
 
 class TelegramProcessMessageService:
 
-    def __init__(
-        self,
-        token: str,
-        agent: Agent,
-        callback_data_dao: CallbackDataDAO,
-    ) -> None:
-        updater = Updater(token=token)
+    def __init__(self, callback_data_dao: CallbackDataDAO) -> None:
+        updater = Updater(token=settings.TELEGRAM_TOKEN)
         self.bot = updater.bot
 
-        self.agent = agent
         self.callback_data_dao = callback_data_dao
 
     def _parse_user_request(
@@ -152,7 +147,8 @@ class TelegramProcessMessageService:
         if not message or not chat_id:
             return
 
-        user_responses: List[Union[str, MarkdownDocument]] = self.agent.query(
+        agent = create_agent()
+        user_responses: List[Union[str, MarkdownDocument]] = agent.query(
             message=message,
             user_id=chat_id,
         )

@@ -13,3 +13,9 @@ class AddPhraseToStudyUseCase:
             source_phrase=phrase_to_study.source_language_phrase,
             target_phrase=phrase_to_study.target_language_phrase,
         )
+
+
+def create_add_phrase_to_study_use_case() -> AddPhraseToStudyUseCase:
+    return AddPhraseToStudyUseCase(
+        phrase_to_study_dao=PhraseToStudyDAO(),
+    )

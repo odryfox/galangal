@@ -1,3 +1,4 @@
+from bot.daos import CallbackDataDAO
 from bot.messengers.telegram.process_message_service import (
     TelegramProcessMessageService
 )
@@ -6,17 +7,13 @@ from flask.views import MethodView
 
 
 class TelegramProcessMessageView(MethodView):
-    def __init__(
-        self,
-        telegram_process_message_service: TelegramProcessMessageService,
-    ) -> None:
-        self.telegram_process_message_service = telegram_process_message_service
-
-        super().__init__()
 
     def post(self):
 
         body = request.get_json()
-        self.telegram_process_message_service.execute(telegram_request=body)
+        telegram_process_message_service = TelegramProcessMessageService(
+            callback_data_dao=CallbackDataDAO(),
+        )
+        telegram_process_message_service.execute(telegram_request=body)
 
         return '!'

@@ -1,2 +1,3 @@
 from .add_phrase_to_study_skill import AddPhraseToStudySkill
+from .greeting_skill import GreetingSkill
 from .search_phrase_contexts_skill import SearchPhraseContextsSkill

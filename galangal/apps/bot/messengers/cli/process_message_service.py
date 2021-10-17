@@ -1,17 +1,11 @@
 from typing import List, Optional, Union
 
 import bot.constants
+from bot.agent import create_agent
 from bot.markdown import Action, MarkdownDocument
-from millet import Agent
 
 
 class CLIProcessMessageService:
-
-    def __init__(
-        self,
-        agent: Agent,
-    ) -> None:
-        self.agent = agent
 
     def _send_user_response(
         self,
@@ -34,7 +28,8 @@ class CLIProcessMessageService:
 
     def execute(self, request: Optional[str]) -> None:
         message = self._parse_user_request(request)
-        user_responses: List[MarkdownDocument] = self.agent.query(
+        agent = create_agent()
+        user_responses: List[MarkdownDocument] = agent.query(
             message=message,
             user_id='console',
         )

@@ -4,6 +4,7 @@ from alembic.command import upgrade as alembic_upgrade
 from alembic.config import Config as AlembicConfig
 from db.connection import DB
 from redis import Redis
+from redis_client import redis_client
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
 
@@ -43,8 +44,6 @@ def session(db: DB):
 
 @pytest.fixture(scope='function', autouse=True)
 def redis() -> Redis:
-    redis = Redis.from_url(url=settings.REDIS_URL)
+    redis_client.flushdb()
 
-    redis.flushdb()
-
-    yield redis
+    yield redis_client

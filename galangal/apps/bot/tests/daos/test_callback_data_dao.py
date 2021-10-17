@@ -1,15 +1,12 @@
 import pytest
-from _pytest.fixtures import FixtureRequest
 from bot.daos import CallbackDataDAO
-from redis import Redis
 
 
 class TestCallbackDataDAO:
 
     @pytest.fixture(autouse=True)
-    def setup_method_fixture(self, request: FixtureRequest, redis: Redis):
-        self.redis = redis
-        self.dao = CallbackDataDAO(redis=self.redis)
+    def setup_method_fixture(self):
+        self.dao = CallbackDataDAO()
 
     def test_generate_key(self):
         key = self.dao._generate_key()
