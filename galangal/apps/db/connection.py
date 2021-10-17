@@ -1,10 +1,6 @@
+import settings
 import sqlalchemy
-from sqlalchemy import orm
+from sqlalchemy.orm import sessionmaker
 
-
-class DB:
-    def __init__(self, url: str):
-        self.engine = sqlalchemy.create_engine(url)
-
-    def create_session(self):
-        return orm.scoped_session(orm.sessionmaker(bind=self.engine))
+engine = sqlalchemy.create_engine(settings.DATABASE_URL)
+Session = sessionmaker(engine)

@@ -154,3 +154,9 @@ class TelegramProcessMessageService:
         )
         for user_response in user_responses:
             self._send_user_response(user_response, chat_id)
+
+
+def create_telegram_process_message_service() -> TelegramProcessMessageService:
+    return TelegramProcessMessageService(
+        callback_data_dao=CallbackDataDAO(),
+    )

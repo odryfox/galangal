@@ -1,17 +1,10 @@
 import pytest
 import settings
-from alembic.command import upgrade as alembic_upgrade
-from alembic.config import Config as AlembicConfig
-from db.connection import DB
+from db.connection import Session
+from db.utils import migrate_db
 from redis import Redis
 from redis_client import redis_client
 from sqlalchemy_utils import create_database, database_exists, drop_database
-
-
-def migrate_db(database_url: str):
-    alembic_config = AlembicConfig('alembic.ini')
-    alembic_config.set_main_option('sqlalchemy.url', database_url)
-    alembic_upgrade(alembic_config, 'head')
 
 
 @pytest.fixture(scope='session', autouse=True)
@@ -22,24 +15,21 @@ def db():
         drop_database(database_url)
 
     create_database(database_url)
-    migrate_db(database_url)
+    migrate_db()
 
-    yield DB(url=database_url)
+    yield
 
     drop_database(database_url)
 
 
 @pytest.fixture(scope='function', autouse=True)
-def session(db: DB):
-    connection = db.engine.connect()
-    trans = connection.begin()
-    session = db.create_session()
+def session(db):
+    session = Session()
 
     yield session
 
+    session.rollback()
     session.close()
-    trans.rollback()
-    connection.close()
 
 
 @pytest.fixture(scope='function', autouse=True)

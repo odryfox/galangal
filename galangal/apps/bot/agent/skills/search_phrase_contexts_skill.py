@@ -16,7 +16,6 @@ class SearchPhraseContextsSkill(BaseSkill):
 
     def execute(self, message: str) -> Union[str, MarkdownDocument]:
         search_phrase_contexts_use_case = create_search_phrase_contexts_use_case()
-        suggest_phrases_to_study_use_case = create_suggest_phrases_to_study_use_case()
 
         try:
             phrase_contexts = (
@@ -37,6 +36,8 @@ class SearchPhraseContextsSkill(BaseSkill):
             )
             for phrase_context in phrase_contexts
         ]
+
+        suggest_phrases_to_study_use_case = create_suggest_phrases_to_study_use_case()
 
         phrases_to_study = (
             suggest_phrases_to_study_use_case.execute(
