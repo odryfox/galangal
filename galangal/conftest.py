@@ -1,7 +1,7 @@
 import pytest
 import settings
 from db.connection import Session
-from db.utils import migrate_db
+from db.utils import migrate_db, truncate_all
 from redis import Redis
 from redis_client import redis_client
 from sqlalchemy_utils import create_database, database_exists, drop_database
@@ -24,11 +24,11 @@ def db():
 
 @pytest.fixture(scope='function', autouse=True)
 def session(db):
+    truncate_all()
     session = Session()
 
     yield session
 
-    session.rollback()
     session.close()
 
 

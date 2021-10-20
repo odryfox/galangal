@@ -1,3 +1,4 @@
+import contextlib
 import sys
 from datetime import datetime
 
@@ -5,6 +6,8 @@ import settings
 from alembic.command import revision as alembic_revision
 from alembic.command import upgrade as alembic_upgrade
 from alembic.config import Config as AlembicConfig
+from db import Base
+from db.connection import engine
 
 
 def migrate_db():
@@ -31,3 +34,11 @@ def make_migration_db() -> None:
         autogenerate=True,
         rev_id=now_str,
     )
+
+
+def truncate_all() -> None:
+    with contextlib.closing(engine.connect()) as con:
+        trans = con.begin()
+        for table in reversed(Base.metadata.sorted_tables):
+            con.execute(table.delete())
+        trans.commit()
