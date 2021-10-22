@@ -11,3 +11,4 @@ class AccountModelFactory(factory.alchemy.SQLAlchemyModelFactory):
         sqlalchemy_session_persistence = 'commit'
 
     chat_id = '100500'
+    username = 'Doe'
