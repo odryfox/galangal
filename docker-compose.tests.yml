@@ -6,22 +6,22 @@ services:
     build: ./galangal
     volumes:
       - ./galangal:/galangal
-    command: bash -c "/usr/wait-for-it.sh --timeout=0 postgres:5432 && PYTHONPATH=apps python -m pytest --verbose --disable-warnings --cov=."
+    command: bash -c "/usr/wait-for-it.sh --timeout=0 postgres_test:5432 && PYTHONPATH=apps python -m pytest --verbose --disable-warnings --cov=."
     environment:
       DEBUG: "false"
-      REDIS_URL: "redis://:pass@redis:6379/0"
-      DATABASE_URL: "postgresql://postgres:pass@postgres:5432/galangal"
+      REDIS_URL: "redis://:pass@redis_test:6379/0"
+      DATABASE_URL: "postgresql://postgres:pass@postgres_test:5432/galangal"
     depends_on:
-      - redis
-      - postgres
+      - redis_test
+      - postgres_test
 
-  redis:
+  redis_test:
     image: "redis:alpine"
     command: redis-server --requirepass pass --save
     ports:
       - "6380:6379"
 
-  postgres:
+  postgres_test:
     image: postgres
     restart: always
     ports:
