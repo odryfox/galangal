@@ -54,6 +54,12 @@ class TelegramProcessMessageService:
                 message = None
                 chat_id = None
 
+        if message == '/start':
+            message = Action(
+                action_type=ActionType.GREETING,
+                params={},
+            )
+
         return message, chat_id
 
     def _send_message(
