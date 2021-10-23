@@ -48,3 +48,10 @@ class SearchPhraseContextsUseCase:
             limit=self.CONTEXTS_LIMIT,
         )
         return phrase_contexts
+
+
+def create_search_phrase_contexts_use_case() -> SearchPhraseContextsUseCase:
+    return SearchPhraseContextsUseCase(
+        recognize_language_service=RecognizeLanguageService(),
+        phrase_contexts_dao=PhraseContextsDAO(),
+    )

@@ -32,3 +32,7 @@ class SuggestPhrasesToStudyUseCase:
                 suggestions_phrases_to_study.append(suggestion_phrase_to_study)
 
         return suggestions_phrases_to_study
+
+
+def create_suggest_phrases_to_study_use_case() -> SuggestPhrasesToStudyUseCase:
+    return SuggestPhrasesToStudyUseCase()

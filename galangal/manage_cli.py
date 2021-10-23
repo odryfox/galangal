@@ -1,8 +1,6 @@
 from cli import create_app
-from config import EnvironmentConfig
 
-config = EnvironmentConfig()
-app = create_app(config=config)
+app = create_app()
 
 if __name__ == '__main__':
     app.run()

@@ -3,24 +3,23 @@ from typing import Union
 import bot.constants
 from bot.markdown import Action, MarkdownActionComponent, MarkdownDocument
 from millet import BaseSkill
-from search_phrase_contexts.use_cases import SearchPhraseContextsUseCase
-from vocabulary_trainer.use_cases import SuggestPhrasesToStudyUseCase
+from search_phrase_contexts.use_cases import (
+    SearchPhraseContextsUseCase,
+    create_search_phrase_contexts_use_case
+)
+from vocabulary_trainer.use_cases import (
+    create_suggest_phrases_to_study_use_case
+)
 
 
 class SearchPhraseContextsSkill(BaseSkill):
 
-    def __init__(
-        self,
-        search_phrase_contexts_use_case: SearchPhraseContextsUseCase,
-        suggest_phrases_to_study_use_case: SuggestPhrasesToStudyUseCase,
-    ) -> None:
-        self.search_phrase_contexts_use_case = search_phrase_contexts_use_case
-        self.suggest_phrases_to_study_use_case = suggest_phrases_to_study_use_case
-
     def execute(self, message: str) -> Union[str, MarkdownDocument]:
+        search_phrase_contexts_use_case = create_search_phrase_contexts_use_case()
+
         try:
             phrase_contexts = (
-                self.search_phrase_contexts_use_case.execute(phrase=message)
+                search_phrase_contexts_use_case.execute(phrase=message)
             )
         except SearchPhraseContextsUseCase.MultilingualException:
             return 'Фраза должна быть на русском или английском языке'
@@ -38,8 +37,10 @@ class SearchPhraseContextsSkill(BaseSkill):
             for phrase_context in phrase_contexts
         ]
 
+        suggest_phrases_to_study_use_case = create_suggest_phrases_to_study_use_case()
+
         phrases_to_study = (
-            self.suggest_phrases_to_study_use_case.execute(
+            suggest_phrases_to_study_use_case.execute(
                 phrase_contexts=phrase_contexts,
             )
         )

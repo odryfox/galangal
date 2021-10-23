@@ -1,8 +1,6 @@
-from config import EnvironmentConfig
 from web import create_app
 
-config = EnvironmentConfig()
-app = create_app(config=config)
+app = create_app()
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=config.DEBUG)
+    app.run(host='0.0.0.0', port=5000)

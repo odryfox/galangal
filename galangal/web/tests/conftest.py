@@ -1,13 +1,11 @@
 import pytest
-from config import EnvironmentTestConfig
 from flask.testing import FlaskClient
 from web import create_app
 
 
-@pytest.fixture(scope='module', autouse=True)
+@pytest.fixture(autouse=True)
 def client() -> FlaskClient:
-    config = EnvironmentTestConfig()
-    app = create_app(config)
+    app = create_app()
 
     with app.test_client() as client:
         yield client
