@@ -34,11 +34,11 @@ class TelegramProcessMessageService:
         telegram_request: dict,
     ) -> Tuple[Optional[Union[str, Action]], Optional[str]]:
         try:
-            chat_id = telegram_request['message']['chat']['id']
+            chat_id = str(telegram_request['message']['chat']['id'])
             message = telegram_request['message']['text']
         except KeyError:
             try:
-                chat_id = telegram_request['callback_query']['from']['id']
+                chat_id = str(telegram_request['callback_query']['from']['id'])
                 callback_key = telegram_request['callback_query']['data']
                 callback_data = self.callback_data_dao.load_data(
                     key=callback_key
