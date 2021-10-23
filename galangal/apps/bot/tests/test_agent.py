@@ -21,7 +21,13 @@ def test_agent__greeting_without_account(redis: Redis, session):
 
     answers = agent.query('Bob', user_id='test')
 
-    assert answers == ['Bob, очень приятно познакомиться)']
+    assert answers == [
+        'Bob, очень приятно познакомиться)',
+        (
+            'А теперь давай перейдем в режим перевода слов. '
+            'Просто введи интересующее тебя слово или фразу и я переведу ее.'
+        ),
+    ]
 
     account = session.query(AccountModel).filter_by(chat_id='test').first()
     assert account.username == 'Bob'
@@ -36,6 +42,10 @@ def test_agent__greeting_with_account(redis: Redis, session):
 
     assert answers == [
         'Привет, я бот, который поможет тебе выучить язык быстро',
+        (
+            'А теперь давай перейдем в режим перевода слов. '
+            'Просто введи интересующее тебя слово или фразу и я переведу ее.'
+        ),
     ]
 
 
@@ -58,7 +68,13 @@ def test_agent__correct_calls(
 
     answers = agent.query('Bob', user_id='test')
 
-    assert answers == ['Bob, очень приятно познакомиться)']
+    assert answers == [
+        'Bob, очень приятно познакомиться)',
+        (
+            'А теперь давай перейдем в режим перевода слов. '
+            'Просто введи интересующее тебя слово или фразу и я переведу ее.'
+        ),
+    ]
 
     is_account_exists_mock.assert_called_once_with(
         mock.ANY,
