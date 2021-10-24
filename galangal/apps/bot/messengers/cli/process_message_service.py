@@ -29,9 +29,16 @@ class CLIProcessMessageService:
     def execute(self, request: Optional[str]) -> None:
         message = self._parse_user_request(request)
         agent = create_agent()
-        user_responses: List[MarkdownDocument] = agent.query(
-            message=message,
-            user_id='console',
-        )
+        chat_id = 'console'
+        if isinstance(message, Action):
+            user_responses: List[Union[str, MarkdownDocument]] = agent.process_action(
+                message=message,
+                user_id=chat_id,
+            )
+        else:
+            user_responses: List[Union[str, MarkdownDocument]] = agent.process_message(
+                message=message,
+                user_id=chat_id,
+            )
         for user_response in user_responses:
             self._send_user_response(user_response)
