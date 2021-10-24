@@ -12,14 +12,14 @@ from redis_client import Redis
 def test_agent__greeting_without_account(redis: Redis, session):
     action = Action(action_type=ActionType.GREETING, params={})
     agent = create_agent()
-    answers = agent.query(action, user_id='test')
+    answers = agent.process_action(action, user_id='test')
 
     assert answers == [
         'Привет, я бот, который поможет тебе выучить язык быстро',
         'Как я могу тебя называть?',
     ]
 
-    answers = agent.query('Bob', user_id='test')
+    answers = agent.process_message('Bob', user_id='test')
 
     assert answers == [
         'Bob, очень приятно познакомиться)',
@@ -38,7 +38,7 @@ def test_agent__greeting_with_account(redis: Redis, session):
 
     action = Action(action_type=ActionType.GREETING, params={})
     agent = create_agent()
-    answers = agent.query(action, user_id='test')
+    answers = agent.process_action(action, user_id='test')
 
     assert answers == [
         'Привет, я бот, который поможет тебе выучить язык быстро',
@@ -57,16 +57,15 @@ def test_agent__correct_calls(
 ):
     is_account_exists_mock.return_value = False
 
-    action = Action(action_type=ActionType.GREETING, params={})
     agent = create_agent()
-    answers = agent.query(action, user_id='test')
+    answers = agent.process_action('hello', user_id='test')
 
     assert answers == [
         'Привет, я бот, который поможет тебе выучить язык быстро',
         'Как я могу тебя называть?',
     ]
 
-    answers = agent.query('Bob', user_id='test')
+    answers = agent.process_message('Bob', user_id='test')
 
     assert answers == [
         'Bob, очень приятно познакомиться)',
@@ -76,10 +75,7 @@ def test_agent__correct_calls(
         ),
     ]
 
-    is_account_exists_mock.assert_called_once_with(
-        mock.ANY,
-        chat_id='test',
-    )
+    assert is_account_exists_mock.call_count == 2
     create_account_by_chat_id_mock.assert_called_once_with(
         mock.ANY,
         chat_id='test',

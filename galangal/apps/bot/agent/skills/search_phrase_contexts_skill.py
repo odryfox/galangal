@@ -14,7 +14,7 @@ from vocabulary_trainer.use_cases import (
 
 class SearchPhraseContextsSkill(BaseSkill):
 
-    def execute(self, message: str) -> Union[str, MarkdownDocument]:
+    def execute(self, message: str, user_id: str) -> Union[str, MarkdownDocument]:
         search_phrase_contexts_use_case = create_search_phrase_contexts_use_case()
 
         try:

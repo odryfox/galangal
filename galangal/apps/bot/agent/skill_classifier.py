@@ -1,6 +1,7 @@
 from typing import List, Union
 
 import bot.constants
+from account.daos import AccountDAO
 from bot.agent.skills import AddPhraseToStudySkill, SearchPhraseContextsSkill
 from bot.agent.skills.greeting_skill import GreetingSkill
 from bot.markdown import Action
@@ -21,8 +22,15 @@ class SkillClassifier(BaseSkillClassifier):
             self.SEARCH_PHRASE_CONTEXTS_SKILL_KEY: SearchPhraseContextsSkill(),
         }
 
-    def classify(self, message: Union[str, dict]) -> List[str]:
+    def classify(self, message: Union[str, dict], user_id: str) -> List[str]:
         skills = []
+
+        is_account_exists = AccountDAO().is_account_exists(
+            chat_id=user_id,
+        )
+        if not is_account_exists:
+            skills.append(self.GREETING_SKILL_KEY)
+            return skills
 
         if isinstance(message, Action):
             if message.action_type == bot.constants.ActionType.GREETING:
